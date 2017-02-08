@@ -49,7 +49,7 @@ class WP_Meta_Type {
 		// Parse root arguments
 		$r = wp_parse_args( $args, array(
 			'global'     => false,
-			'table_name' => $object_type . 'meta',
+			'table_name' => $object_type . '_meta',
 			'columns'    => array()
 		) );
 
