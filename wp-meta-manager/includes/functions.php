@@ -149,3 +149,12 @@ function wp_register_meta_type( $object_type = '', $args = array() ) {
 
 	return $wp_meta_types[ $object_type ];
 }
+
+/**
+ * Get meta
+ *
+ * @since 1.0
+ */
+function get_meta( $object_type = '', $meta_id = 0 ) {
+	return new WP_Meta( $meta_id, $object_type );
+}
