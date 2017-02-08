@@ -91,6 +91,10 @@ function wp_meta_manager_admin_notices() {
 		return;
 	}
 
+	if( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
 	switch( $_GET['wp-meta-message'] ) {
 
 		case 'success' :
@@ -197,6 +201,10 @@ function wp_meta_ajax_edit_response() {
 		die( '-3' );
 	}
 
+	if( ! current_user_can( 'manage_options' ) ) {
+		die( '-4' );
+	}
+
 	$meta_id     = absint( $data['meta_id'] );
 	$object_type = sanitize_key( $data['object_type'] );
 	$meta_key    = wp_unslash( $data['meta_key'] );
@@ -244,6 +252,10 @@ function wp_meta_ajax_delete_response() {
 		die( '-3' );
 	}
 
+	if( ! current_user_can( 'manage_options' ) ) {
+		die( '-4' );
+	}
+
 	$meta_id     = absint( $_POST['meta_id'] );
 	$object_type = sanitize_key( $_POST['object_type'] );
 	$meta        = get_meta( $object_type, $meta_id );
@@ -280,6 +292,10 @@ function wp_meta_process_add_meta() {
 	}
 
 	if( empty( $_POST['object_type'] ) ) {
+		return;
+	}
+
+	if( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 
