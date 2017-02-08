@@ -178,14 +178,13 @@ class WP_Meta {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @param string $object_type
 	 * @param array $args
 	 * @return bool|WP_Error True on success, WP_Error on failure
 	 */
-	public function update( $object_type = '', $args = array() ) {
+	public function update( $args = array() ) {
 		global $wpdb;
 
-		$type_object = wp_get_meta_type( $object_type );
+		$type_object = wp_get_meta_type( $this->object_type );
 
 		$to_update = array();
 		$to_update[ $type_object->columns['meta_key'] ]   = $args['meta_key'];
@@ -204,6 +203,38 @@ class WP_Meta {
 				'%d'
 			)
 		);
+
+		// TODO update meta cache / refresh object
+
+		return $ret;
+	}
+
+	/**
+	 * Update meta.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @param string $object_type
+	 * @param array $args
+	 * @return bool|WP_Error True on success, WP_Error on failure
+	 */
+	public function delete() {
+		global $wpdb;
+
+		$type_object = wp_get_meta_type( $this->object_type );
+
+		$ret = $wpdb->delete(
+			$type_object->table_name,
+			array(
+				$type_object->columns['meta_id'] => $this->id
+			),
+			array(
+				'%d'
+			)
+		);
+
+		// TODO clear meta cache and null object
 
 		return $ret;
 	}

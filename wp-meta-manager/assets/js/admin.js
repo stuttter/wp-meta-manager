@@ -33,5 +33,38 @@
 
 		});
 
+		$('.wp-meta-delete').on('click', function(e) {
+
+			e.preventDefault();
+
+			var meta = $(this);
+
+			$.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: {
+					meta_id: meta.data( 'meta-id' ),
+					object_type: meta.data( 'object-type' ),
+					nonce: meta.data( 'nonce' ),
+					action: 'delete_meta',
+				},
+				dataType: "json",
+				success: function( response ) {
+					console.log( response );
+
+				},
+				beforeSend: function() {
+				},
+				complete: function() {
+				}
+
+			}).fail(function (response) {
+				if ( window.console && window.console.log ) {
+					console.log( response );
+				}
+			});
+
+		});
+
 	});
 })(jQuery);

@@ -51,9 +51,8 @@ class WP_Meta_List_table extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'          => '<input type="checkbox" />',
-			'meta_id'     => esc_html__( 'Meta ID',    'wp-meta-manager' ),
-			'object_id'   => esc_html__( 'Object ID',  'wp-meta-manager' ),
 			'meta_key'    => esc_html__( 'Meta Key',   'wp-meta-manager' ),
+			'object_id'   => esc_html__( 'Object ID',  'wp-meta-manager' ),
 			'meta_value'  => esc_html__( 'Meta Value', 'wp-meta-manager' ),
 		);
 	}
@@ -67,7 +66,6 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
-			'meta_id'    => array( 'meta_id',    false ),
 			'object_id'  => array( 'object_id',  false ),
 			'meta_key'   => array( 'meta_key',   false ),
 			'meta_value' => array( 'meta_value', false ),
@@ -101,12 +99,12 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
-	 * Output the meta_id column with row actions
+	 * Output the meta_key column
 	 *
 	 * @since 1.0
 	 */
-	public function column_meta_id( $item = '' ) {
-		
+	public function column_meta_key( $item = '' ) {
+	
 		$edit_url   = '#TB_inline?width=600&height=600&inlineId=wp-meta-edit-' . $item->id;
 		$delete_url = add_query_arg( array(
 			'object_type' => $item->object_type,
@@ -116,10 +114,10 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		$actions = array(
 			'edit'   => '<a href="' . esc_url( $edit_url ) . '" class="wp-meta-action-link thickbox">' . __( 'Edit', 'wp-meta-manager' ) . '</a>',
-			'delete' => '<a href="' . esc_url( $delete_url ) . '"wp-meta-action-link delete" data-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '">' . __( 'Delete', 'wp-meta-manager' ) . '</a>'
+			'delete' => '<a href="' . esc_url( $delete_url ) . '" class="wp-meta-action-link wp-meta-delete delete" data-meta-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '" data-nonce="' . wp_create_nonce( 'wp-meta-delete' ) . '">' . __( 'Delete', 'wp-meta-manager' ) . '</a>'
 		);
 
-		return $item->id . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
+		return $item->meta_key . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
 
 	}
 
@@ -130,15 +128,6 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function column_object_id( $item = '' ) {
 		return $item->object_id;
-	}
-
-	/**
-	 * Output the meta_key column
-	 *
-	 * @since 1.0
-	 */
-	public function column_meta_key( $item = '' ) {
-		return $item->meta_key;
 	}
 
 	/**

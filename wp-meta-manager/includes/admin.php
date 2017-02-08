@@ -133,7 +133,7 @@ function wp_meta_get_admin_tabs() {
 }
 
 /**
- * Displays the edit view with ajax
+ * Process meta data edit request
  *
  * @since 1.0
  *
@@ -162,7 +162,7 @@ function wp_meta_ajax_edit_response() {
 	$object_id   = absint( $data['object_id'] );
 	$meta        = get_meta( $object_type, $meta_id );
 
-	$ret = $meta->update( $object_type, array(
+	$ret = $meta->update( array(
 		'meta_key'   => $meta_key,
 		'meta_value' => $meta_value,
 		'object_id'  => $object_id,
@@ -170,11 +170,50 @@ function wp_meta_ajax_edit_response() {
 
 	if( $ret ) {
 
-		wp_send_json_success( array( 'success' => true, 'data' => $ret ) );
+		wp_send_json_success( array( 'success' => true, 'data' => $meta ) );
 
 	} else {
 
 		wp_send_json_error( array( 'success' => false, 'data' => $meta ) );
+
+	}
+
+}
+
+/**
+ * Process meta data delete request
+ *
+ * @since 1.0
+ *
+ * @return void
+ */
+function wp_meta_ajax_delete_response() {
+
+	if( empty( $_POST['nonce'] ) ) {
+		die( '-1' );
+	}
+
+	if( empty( $_POST['meta_id'] ) || empty( $_POST['object_type'] ) ) {
+		die( '-2' );
+	}
+
+	if ( ! wp_verify_nonce( $_POST['nonce'], 'wp-meta-delete' ) ) {
+		die( '-3' );
+	}
+
+	$meta_id     = absint( $_POST['meta_id'] );
+	$object_type = sanitize_key( $_POST['object_type'] );
+	$meta        = get_meta( $object_type, $meta_id );
+
+	$ret = $meta->delete();
+
+	if( $ret ) {
+
+		wp_send_json_success( array( 'success' => true ) );
+
+	} else {
+
+		wp_send_json_error( array( 'success' => false ) );
 
 	}
 
