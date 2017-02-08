@@ -17,45 +17,45 @@ function _wp_register_meta_types() {
 
 	// Register post meta table
 	wp_register_meta_type( 'post', array(
-		'name'               => 'postmeta',
-		'columns'            => array(
-			'primary_column' => 'meta_id',
-			'object_id'      => 'post_id',
-			'key'            => 'meta_key',
-			'value'          => 'meta_value'
+		'name'                  => 'postmeta',
+		'columns'               => array(
+			'primary_column_id' => 'meta_id',
+			'object_id'         => 'post_id',
+			'key'               => 'meta_key',
+			'value'             => 'meta_value'
 		)
 	) );
 
 	// Register comment meta table
 	wp_register_meta_type( 'comment', array(
-		'name'               => 'commentmeta',
-		'columns'            => array(
-			'primary_column' => 'meta_id',
-			'object_id'      => 'comment_id',
-			'key'            => 'meta_key',
-			'value'          => 'meta_value'
+		'name'                  => 'commentmeta',
+		'columns'               => array(
+			'primary_column_id' => 'meta_id',
+			'object_id'         => 'comment_id',
+			'key'               => 'meta_key',
+			'value'             => 'meta_value'
 		)
 	) );
 
 	// Register term meta table
 	wp_register_meta_type( 'term', array(
-		'name'               => 'termmeta',
-		'columns'            => array(
-			'primary_column' => 'meta_id',
-			'object_id'      => 'term_id',
-			'key'            => 'meta_key',
-			'value'          => 'meta_value'
+		'name'                  => 'termmeta',
+		'columns'               => array(
+			'primary_column_id' => 'meta_id',
+			'object_id'         => 'term_id',
+			'key'               => 'meta_key',
+			'value'             => 'meta_value'
 		)
 	) );
 
 	// Register user meta table
 	wp_register_meta_type( 'user', array(
-		'name'               => 'usermeta',
-		'columns'            => array(
-			'primary_column' => 'umeta_id',
-			'object_id'      => 'user_id',
-			'key'            => 'meta_key',
-			'value'          => 'meta_value'
+		'name'                  => 'usermeta',
+		'columns'               => array(
+			'primary_column_id' => 'umeta_id',
+			'object_id'         => 'user_id',
+			'key'               => 'meta_key',
+			'value'             => 'meta_value'
 		)
 	) );
 
