@@ -16,6 +16,7 @@
 				dataType: "json",
 				success: function( response ) {
 					console.log( response );
+					window.location.reload();
 
 				},
 				beforeSend: function() {
@@ -51,6 +52,7 @@
 				dataType: "json",
 				success: function( response ) {
 					console.log( response );
+					$('#wp-meta-' + meta.data( 'meta-id' ) ).css( { backgroundColor: '#faafaa' } ).fadeOut();
 
 				},
 				beforeSend: function() {

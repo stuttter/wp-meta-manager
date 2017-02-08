@@ -142,6 +142,20 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
+	 * Generates content for a single row of the table
+	 *
+	 * @since 1.0
+	 * @access public
+	 *
+	 * @param object $item The current item
+	 */
+	public function single_row( $item ) {
+		echo '<tr id="wp-meta-' . $item->id . '">';
+		$this->single_row_columns( $item );
+		echo '</tr>';
+	}
+
+	/**
 	 * Handle bulk action requests
 	 *
 	 * @since 1.0
