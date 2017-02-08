@@ -52,7 +52,7 @@ class WP_Meta_List_table extends WP_List_Table {
 		return array(
 			'cb'          => '<input type="checkbox" />',
 			'meta_id'     => esc_html__( 'Meta ID',    'wp-meta-manager' ),
-			'object_key'  => esc_html__( 'Object ID',  'wp-meta-manager' ),
+			'object_id'   => esc_html__( 'Object ID',  'wp-meta-manager' ),
 			'meta_key'    => esc_html__( 'Meta Key',   'wp-meta-manager' ),
 			'meta_value'  => esc_html__( 'Meta Value', 'wp-meta-manager' ),
 		);
@@ -133,7 +133,9 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * @since 1.0
 	 */
 	public function column_meta_value( $item = '' ) {
-		return $item->meta_value;
+		return is_serialized( $item->meta_value )
+			? '<code>serialized</code>'
+			: '<code>' . $item->meta_value . '</code>';
 	}
 
 	/**
