@@ -47,6 +47,7 @@ function wp_meta_manager_admin() {
 
 	add_thickbox();
 	$tab      = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
+	$tab      = wp_get_meta_type( $tab ) ? $tab : 'post';
 	$base_url = admin_url( 'tools.php?page=wp-meta-manager' );
 
 ?>
