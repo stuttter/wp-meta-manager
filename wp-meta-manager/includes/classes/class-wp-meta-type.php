@@ -10,9 +10,39 @@ defined( 'ABSPATH' ) || exit;
 
 class WP_Meta_Type {
 
+	/**
+	 * Sanitized string of the type of meta this is.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var string
+	 */
 	public $object_type;
-	public $columns;
 
+	/**
+	 * Array of database column names.
+	 *
+	 * These are usually automatically built based on the object_type, but in
+	 * some cases (like wp_usermeta) a column name may deviate from that pattern.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var array
+	 */
+	public $columns = array();
+
+	/**
+	 * Setup the object properties
+	 *
+	 * @since 1.0.0
+	 *
+	 * @see wp_register_meta_type()
+	 *
+	 * @global WPDB $wpdb
+	 *
+	 * @param string $object_type
+	 * @param array  $args
+	 */
 	public function __construct( $object_type = '', $args = array() ) {
 		global $wpdb;
 
