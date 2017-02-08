@@ -46,19 +46,19 @@ class WP_Meta_Type {
 	public function __construct( $object_type = '', $args = array() ) {
 		global $wpdb;
 
-		// Default columns
-		$columns = array(
+		// Parse root arguments
+		$r = wp_parse_args( $args, array(
+			'global'     => false,
+			'table_name' => $object_type . 'meta',
+			'columns'    => array()
+		) );
+
+		// Parse columns argument
+		$r['columns'] = wp_parse_args( $r['columns'], array(
 			'meta_id'    => 'meta_id',
 			'object_id'  => $object_type . '_id',
 			'meta_key'   => 'meta_key',
 			'meta_value' => 'meta_value'
-		);
-
-		// Parse the arguments
-		$r = wp_parse_args( $args, array(
-			'global'     => false,
-			'table_name' => $object_type . 'meta',
-			'columns'    => $columns,
 		) );
 
 		// Get prefix for global/site meta
