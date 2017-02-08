@@ -157,8 +157,9 @@ function wp_meta_ajax_edit_response() {
 
 	$meta_id     = absint( $data['meta_id'] );
 	$object_type = sanitize_key( $data['object_type'] );
-	$meta_key    = sanitize_key( $data['meta_key'] );
-	$meta_value  = sanitize_key( $data['meta_value'] );
+	$meta_key    = wp_unslash( $data['meta_key'] );
+	$meta_value  = wp_unslash( $data['meta_value'] );
+	$meta_value  = sanitize_meta( $meta_key, $meta_value, $object_type );
 	$object_id   = absint( $data['object_id'] );
 	$meta        = get_meta( $object_type, $meta_id );
 
