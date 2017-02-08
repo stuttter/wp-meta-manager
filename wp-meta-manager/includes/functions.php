@@ -39,45 +39,83 @@ function _wp_register_meta_types() {
 	) );
 
 	do_action( 'wp_register_meta_types' );
-
 }
 
 /**
- * Get meta tables
+ * Get a list of all registered meta type objects.
  *
- * @since 1.0
+ * @since 2.9.0
+ *
+ * @global array $wp_post_types List of meta types.
+ *
+ * @see register_post_type() for accepted arguments.
+ *
+ * @param array|string $args     Optional. An array of key => value arguments to match against
+ *                               the meta type objects. Default empty array.
+ * @param string       $output   Optional. The type of output to return. Accepts post type 'names'
+ *                               or 'objects'. Default 'names'.
+ * @param string       $operator Optional. The logical operation to perform. 'or' means only one
+ *                               element from the array needs to match; 'and' means all elements
+ *                               must match; 'not' means no elements may match. Default 'and'.
+ * @return array A list of post type names or objects.
  */
-function wp_get_meta_types() {
-
+function wp_get_meta_types( $args = array(), $output = 'names', $operator = 'and' ) {
 	global $wp_meta_types;
 
-	if( ! did_action( 'wp_register_meta_types' ) ) {
-		// doing it wrong notice
-	}
+	$field = ( 'names' === $output )
+		? 'name'
+		: false;
 
-	return (array) apply_filters( 'wp_meta_types', $wp_meta_types );
+	return wp_filter_object_list( $wp_meta_types, $args, $operator, $field );
 }
 
 /**
- * Register meta table
+ * Retrieves a meta type object by name.
  *
- * @since 1.0
+ * @since 1.0.0
+ *
+ * @global array $wp_meta_types List of meta types.
+ *
+ * @see wp_register_meta_type()
+ *
+ * @param string $object_type The name of a registered meta type.
+ * @return WP_Meta_Type|null WP_Meta_Type object if it exists, null otherwise.
  */
 function wp_get_meta_type( $object_type = '' ) {
+	global $wp_meta_types;
 
-	$types = wp_get_meta_types();
-	
-	if( ! isset( $types[ $object_type ] ) ) {
-		return false;
+	if ( ! is_scalar( $object_type ) || empty( $wp_meta_types[ $object_type ] ) ) {
+		return null;
 	}
 
-	return $types[ $object_type ];
+	return $wp_meta_types[ $object_type ];
 }
 
+
 /**
- * Register meta table
+ * Registers a meta type.
  *
- * @since 1.0
+ * Note: Meta type registrations should be hooked in as early as possible.
+ * Also, all primary object types should be registered first.
+ *
+ * @since 1.0.0
+ *
+ * @global array $wp_meta_types List of meta types.
+ *
+ * @param string $object_type Meta type key. Must not exceed 20 characters and may
+ *                          only contain lowercase alphanumeric characters, dashes,
+ *                          and underscores. See sanitize_key().
+ * @param array|string $args {
+ *     Array or string of arguments for registering a meta type.
+ *
+ *     @type bool        $global                Whether this metadata is for a global object.
+ *                                              Default is false.
+ *     @type string      $tablename             The name of the meta-data table, un-prefixed.
+ *                                              Default is value of $labels['name'].
+ *     @type array       $columns               Array of database table columns.
+ *                                              Keys: meta_id, object_id, meta_key, meta_value
+ * }
+ * @return WP_Meta_Type|WP_Error The registered meta type object, or an error object.
  */
 function wp_register_meta_type( $object_type = '', $args = array() ) {
 	global $wp_meta_types;
