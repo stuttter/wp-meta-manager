@@ -639,9 +639,11 @@ class WP_Meta_Data_Query {
 				$parsed = "{$this->meta_object->columns['object_id']}";
 				break;
 			case 'key':
+			case 'meta_key':
 				$parsed = "{$this->meta_object->columns['meta_key']}";
 				break;
 			case 'value':
+			case 'meta_value':
 				$parsed = "{$this->meta_object->columns['meta_value']}";
 				break;
 			case 'meta_id__in':
