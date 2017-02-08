@@ -192,14 +192,14 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		// Query parameters
 		$per_page     = 20;
-		$current_page = $this->get_pagenum();
+		$offset       = ( 20 * $this->get_pagenum() ) - 1;
 		$orderby      = ( ! empty( $_REQUEST['orderby'] ) ) ? sanitize_key( $_REQUEST['orderby'] ) : 'meta_id';
 		$order        = ( ! empty( $_REQUEST['order']   ) ) ? sanitize_key( $_REQUEST['order']   ) : 'asc';
 
 		// Query for replies
 		$meta_data_query  = new WP_Meta_Data_Query( array(
 			'number'      => $per_page,
-			'paged'       => $current_page,
+			'offset'      => $offset,
 			'orderby'     => $orderby,
 			'order'       => ucwords( $order )
 		), $this->object_type );
