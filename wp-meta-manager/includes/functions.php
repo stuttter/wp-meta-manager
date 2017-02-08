@@ -155,6 +155,28 @@ function wp_register_meta_type( $object_type = '', $args = array() ) {
  *
  * @since 1.0
  */
-function get_meta( $object_type = '', $meta_id = 0 ) {
-	return new WP_Meta( $meta_id, $object_type );
+function get_meta( $object_type = '', $meta = 0 ) {
+
+	if ( $meta instanceof WP_Meta ) {
+		$_meta = $meta;
+	} elseif ( is_object( $meta ) ) {
+		$_meta = new WP_Meta( $meta );
+	} else {
+		$_meta = WP_Meta::get_instance( $object_type, $meta );
+	}
+
+	if ( ! $_meta ) {
+		return null;
+	}
+
+	/**
+	 * Fires after a meta is retrieved.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_Meta $_meta Meta data.
+	 */
+	$_meta = apply_filters( 'get_meta', $_meta );
+
+	return $_meta;
 }
