@@ -192,7 +192,7 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		// Query parameters
 		$per_page     = 20;
-		$offset       = ( 20 * $this->get_pagenum() ) - 1;
+		$offset       = $per_page * ( $this->get_pagenum() - 1 );
 		$orderby      = ( ! empty( $_REQUEST['orderby'] ) ) ? sanitize_key( $_REQUEST['orderby'] ) : 'meta_id';
 		$order        = ( ! empty( $_REQUEST['order']   ) ) ? sanitize_key( $_REQUEST['order']   ) : 'asc';
 
