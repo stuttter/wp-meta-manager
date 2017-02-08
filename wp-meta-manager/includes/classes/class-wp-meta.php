@@ -25,7 +25,8 @@ class WP_Meta {
 		}
 
 		// Check cache
-		$_meta = wp_cache_get( $meta_id, $type . 'meta' );
+		$cache_key = $type . '_meta_data';
+		$_meta     = wp_cache_get( $meta_id, $cache_key );
 
 		// Cache miss
 		if ( false === $_meta ) {
@@ -40,31 +41,47 @@ class WP_Meta {
 			}
 
 			// Setup for mapping values to columns
-			$_meta = new stdClass();
-			$map   = $type_object->columns;
-
-			// Loop through database results
-			foreach ( $result as $meta_key => $meta_value ) {
-
-				// Loop through meta column mappings
-				foreach ( $map as $map_key => $map_value ) {
-
-					// Map value to correct index
-					if ( $meta_key === $map_value ) {
-						$_meta->$map_key = $meta_value;
-					}
-				}
-			}
-
-			// Add type to object
-			$_meta->object_type = $type;
+			$_meta = self::normalize( $type, $result );
 
 			// Cache object
-			wp_cache_add( $meta_id, $_meta, 'sites' );
+			wp_cache_add( $meta_id, $_meta, $cache_key );
 		}
 
 		// Return WP_Meta object
 		return new WP_Meta( $_meta );
+	}
+
+	/**
+	 * Normalize values to columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $type
+	 * @param object $meta
+	 * @return object
+	 */
+	public static function normalize( $type = '', $meta = '' ) {
+		$type_object = wp_get_meta_type( $type );
+		$_meta       = new stdClass();
+		$map         = $type_object->columns;
+
+		// Loop through database results
+		foreach ( $meta as $meta_key => $meta_value ) {
+
+			// Loop through meta column mappings
+			foreach ( $map as $map_key => $map_value ) {
+
+				// Map value to correct index
+				if ( $meta_key === $map_value ) {
+					$_meta->$map_key = $meta_value;
+				}
+			}
+		}
+
+		// Add type to object
+		$_meta->object_type = $type;
+
+		return $_meta;
 	}
 
 	/**
