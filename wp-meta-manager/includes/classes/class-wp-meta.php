@@ -203,14 +203,13 @@ class WP_Meta {
 
 		$type_object = wp_get_meta_type( $this->object_type );
 
-		$to_update = array();
-		$to_update[ $type_object->columns['meta_key'] ]   = $args['meta_key'];
-		$to_update[ $type_object->columns['meta_value'] ] = $args['meta_value'];
-		$to_update[ $type_object->columns['object_id'] ]  = $args['object_id'];
-
 		$ret = $wpdb->update(
 			$type_object->table_name,
-			$to_update,
+			array(
+				$type_object->columns['meta_key']   => $args['meta_key'],
+				$type_object->columns['meta_value'] => $args['meta_value'],
+				$type_object->columns['object_id']  => $args['object_id']
+			),
 			array(
 				$type_object->columns['meta_id'] => $this->id
 			),
@@ -221,7 +220,7 @@ class WP_Meta {
 			)
 		);
 
-		// TODO update meta cache / refresh object
+		wp_clean_meta_cache( $this->object_type, $this->id );
 
 		return $ret;
 	}
@@ -251,7 +250,7 @@ class WP_Meta {
 			)
 		);
 
-		// TODO clear meta cache and null object
+		wp_clean_meta_cache( $this->object_type, $this->id );
 
 		return $ret;
 	}

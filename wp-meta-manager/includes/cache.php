@@ -18,6 +18,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
+ * @param string $type Object type name.
+ * @param array  $ids  Array of meta IDs.
+ *
  * @param array $ids ID list.
  */
 function wp_prime_meta_caches( $type = '', $ids = array() ) {
@@ -49,7 +52,7 @@ function wp_update_meta_cache( $type = '', $metas = array() ) {
 	// Loop through metas & add them to cache group
 	foreach ( $metas as $meta ) {
 		$meta = WP_Meta::normalize( $type, $meta );
-		wp_cache_add( $meta->id, $meta, $type . '_meta_data' );
+		wp_cache_set( $meta->id, $meta, $type . '_meta_data' );
 	}
 }
 
@@ -63,7 +66,7 @@ function wp_update_meta_cache( $type = '', $metas = array() ) {
 function wp_clean_meta_cache( $type = '', $meta = '' ) {
 
 	// Get meta, and bail if not found
-	$meta = WP_Meta::get_instance( $meta );
+	$meta = WP_Meta::get_instance( $type, $meta );
 	if ( empty( $meta ) || is_wp_error( $meta ) ) {
 		return;
 	}
