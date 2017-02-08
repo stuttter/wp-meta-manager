@@ -15,25 +15,18 @@ defined( 'ABSPATH' ) || exit;
  */
 function _wp_register_meta_types() {
 
-	// Register post meta table
-	wp_register_meta_type( 'post', array(
-		'table_name' => 'postmeta'
-	) );
+	// Post meta table
+	wp_register_meta_type( 'post' );
 
-	// Register comment meta table
-	wp_register_meta_type( 'comment', array(
-		'table_name' => 'commentmeta'
-	) );
+	// Comment meta table
+	wp_register_meta_type( 'comment' );
 
-	// Register term meta table
-	wp_register_meta_type( 'term', array(
-		'table_name' => 'termmeta'
-	) );
+	// Term meta table
+	wp_register_meta_type( 'term' );
 
-	// Register user meta table
+	// User meta table
 	wp_register_meta_type( 'user', array(
-		'table_name' => 'usermeta',
-		'columns'    => array(
+		'columns' => array(
 			'meta_id' => 'umeta_id'
 		)
 	) );
