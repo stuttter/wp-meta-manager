@@ -25,9 +25,11 @@ function _wp_meta_manager() {
 	$plugin_path = plugin_dir_path( __FILE__ ) . 'wp-meta-manager/';
 
 	// Required Files
+	require_once $plugin_path . 'includes/classes/class-wp-meta-type.php';
+	require_once $plugin_path . 'includes/classes/class-wp-meta-list-table.php';
+	require_once $plugin_path . 'includes/classes/class-wp-meta-data-query.php';
 	require_once $plugin_path . 'includes/admin.php';
 	require_once $plugin_path . 'includes/capabilities.php';
-	require_once $plugin_path . 'includes/classes/class-wp-meta-type.php';
 	require_once $plugin_path . 'includes/functions.php';
 	require_once $plugin_path . 'includes/hooks.php';
 

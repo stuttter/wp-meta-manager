@@ -28,12 +28,23 @@ function wp_meta_manager_admin_menu() {
  */
 function wp_meta_manager_admin() {
 
-	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
+	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'postmeta';
 ?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
 		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( $tab ); ?></h2>
-		
+<?php
+		$page       = isset( $_REQUEST['page'] ) ? absint( $_REQUEST['page'] ) : 1;
+		$list_table = new WP_Meta_List_table();
+		$list_table->object_type = $tab;
+		$list_table->table_name  = wp_get_meta_type( $tab )->table_name;
+		$list_table->prepare_items();
+?>
+		<form id="wp-meta-data" method="get">
+			<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
+
+			<?php $list_table->display(); ?>
+		</form>
 	</div>
 <?php
 }
@@ -99,7 +110,7 @@ function wp_meta_get_admin_tab_html( $active_tab = '' ) {
 function wp_meta_get_admin_tabs() {
 
 	$types = wp_get_meta_types();
-	$tabs  = wp_list_pluck( $types, 'name' );
+	$tabs  = wp_list_pluck( $types, 'object_type' );
 
 	return apply_filters( 'wp_meta_admin_tabs', $tabs );
 }
