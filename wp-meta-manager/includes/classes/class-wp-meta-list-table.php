@@ -31,7 +31,6 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * @since 1.0
 	 */
 	public function __construct( $args = array() ) {
-
 		$args = array(
 			'singular' => 'meta_row',
 			'plural'   => 'meta_rows',
@@ -52,8 +51,9 @@ class WP_Meta_List_table extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'          => '<input type="checkbox" />',
-			'meta_id'     => esc_html__( 'Meta ID',  'wp-meta-manager' ),
-			'meta_key'    => esc_html__( 'Meta Key', 'wp-meta-manager' ),
+			'meta_id'     => esc_html__( 'Meta ID',    'wp-meta-manager' ),
+			'object_key'  => esc_html__( 'Object ID',  'wp-meta-manager' ),
+			'meta_key'    => esc_html__( 'Meta Key',   'wp-meta-manager' ),
 			'meta_value'  => esc_html__( 'Meta Value', 'wp-meta-manager' ),
 		);
 	}
@@ -67,8 +67,9 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
-			'meta_id'    => array( 'meta_id', false ),
-			'meta_key'   => array( 'meta_key', false ),
+			'meta_id'    => array( 'meta_id',    false ),
+			'object_id'  => array( 'object_id',  false ),
+			'meta_key'   => array( 'meta_key',   false ),
 			'meta_value' => array( 'meta_value', false ),
 		);
 	}
@@ -100,16 +101,25 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
-	 * Output the meta_id columnd
+	 * Output the meta_id column
 	 *
 	 * @since 1.0
 	 */
 	public function column_meta_id( $item = '' ) {
-		return $item->ID;
+		return $item->id;
 	}
 
 	/**
-	 * Output the meta_key columnd
+	 * Output the meta_id column
+	 *
+	 * @since 1.0
+	 */
+	public function column_object_id( $item = '' ) {
+		return $item->object_id;
+	}
+
+	/**
+	 * Output the meta_key column
 	 *
 	 * @since 1.0
 	 */
@@ -118,7 +128,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
-	 * Output the meta_value columnd
+	 * Output the meta_value column
 	 *
 	 * @since 1.0
 	 */

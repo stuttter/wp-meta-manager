@@ -90,14 +90,19 @@ class WP_Meta {
 	 */
 	public function __get( $key ) {
 		switch ( $key ) {
+			case 'ID':
 			case 'id':
 			case 'meta_id':
 				return (int) $this->id;
+
 			case 'object_id':
+			case $this->object_type . '_id':
 				return (int) $this->object_id;
+
 			case 'key':
 			case 'meta_key':
 				return $this->key;
+
 			case 'value':
 			case 'meta_value':
 				return $this->value;
@@ -117,6 +122,7 @@ class WP_Meta {
 	 */
 	public function __isset( $key ) {
 		switch ( $key ) {
+			case 'ID':
 			case 'id':
 			case 'meta_id':
 				return true;
@@ -136,6 +142,7 @@ class WP_Meta {
 	 */
 	public function __set( $key, $value ) {
 		switch ( $key ) {
+			case 'ID':
 			case 'id':
 			case 'meta_id':
 				$this->id = (int) $value;
