@@ -31,6 +31,13 @@ function _wp_register_meta_types() {
 		)
 	) );
 
+	// Network meta
+	if ( is_multisite() ) {
+		wp_register_meta_type( 'site', array(
+			'global' => true
+		) );
+	}
+
 	do_action( 'wp_register_meta_types' );
 }
 
