@@ -32,7 +32,10 @@ function _wp_register_meta_types() {
 
 	// Register user meta table
 	wp_register_meta_type( 'user', array(
-		'table_name' => 'usermeta'
+		'table_name' => 'usermeta',
+		'columns'    => array(
+			'meta_id' => 'umeta_id'
+		)
 	) );
 
 	do_action( 'wp_register_meta_types' );
