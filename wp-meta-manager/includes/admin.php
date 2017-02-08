@@ -27,11 +27,12 @@ function wp_meta_manager_admin_menu() {
  * @since 1.0
  */
 function wp_meta_manager_admin() {
-?>
 
+	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
+?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
-		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( 'post' ); ?></h2>
+		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( $tab ); ?></h2>
 		
 	</div>
 <?php
@@ -80,7 +81,7 @@ function wp_meta_get_admin_tab_html( $active_tab = '' ) {
 		// Setup tab HTML
 		$is_current = (bool) ( $tab == $active_tab );
 		$tab_class  = $is_current ? $active_class : $idle_class;
-		$tab_url    = get_admin_url( '', add_query_arg( array( 'tab' => $tab, 'page' => 'wp-meta-manager' ), 'tools.php' ) );
+		$tab_url    = get_admin_url( '', add_query_arg( array( 'tab' => $tab ), 'tools.php?page=wp-meta-manager' ) );
 		$tabs_html .= '<a href="' . esc_url( $tab_url ) . '" class="' . esc_attr( $tab_class ) . '">' . esc_html( ucfirst( $tab ) ) . '</a>';
 	}
 
