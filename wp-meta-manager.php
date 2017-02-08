@@ -30,6 +30,7 @@ function _wp_meta_manager() {
 	require_once $plugin_path . 'includes/classes/class-wp-meta-list-table.php';
 	require_once $plugin_path . 'includes/classes/class-wp-meta-data-query.php';
 	require_once $plugin_path . 'includes/admin.php';
+	require_once $plugin_path . 'includes/cache.php';
 	require_once $plugin_path . 'includes/edit.php';
 	require_once $plugin_path . 'includes/capabilities.php';
 	require_once $plugin_path . 'includes/functions.php';
