@@ -17,9 +17,8 @@ function wp_meta_manager_admin_menu() {
 
 	$hook = add_management_page( __( 'Meta Manager', 'wp-meta-manager' ), __( 'Meta Manager', 'wp-meta-manager' ), 'manage_options', 'wp-meta-manager', 'wp_meta_manager_admin' );
 
-	add_action( 'load-' . $hook, 'wp_meta_manager_admin_help' );
+	add_action( 'load-' . $hook, 'wp_meta_manager_admin_help'    );
 	add_action( 'load-' . $hook, 'wp_meta_manager_admin_scripts' );
-
 }
 
 /**
@@ -29,8 +28,13 @@ function wp_meta_manager_admin_menu() {
  */
 function wp_meta_manager_admin_scripts() {
 
-	wp_enqueue_script( 'wp-meta-manager-admin', wp_meta_manager_get_plugin_url() . 'assets/js/admin.js', array( 'jquery' ) );
+	// Script data
+	$url = wp_meta_manager_get_plugin_url();
+	$ver = wp_meta_manager_get_asset_version();
 
+	// Enqueues
+	wp_enqueue_script( 'wp-meta-manager-admin', $url . 'assets/js/admin.js', array( 'jquery' ), $ver );
+	wp_enqueue_style( 'wp-meta-manager-admin', $url . 'assets/css/admin.css', array(), $ver );
 }
 
 /**
@@ -151,6 +155,8 @@ function wp_meta_ajax_edit_response() {
 	if( empty( $_POST['data'] ) ) {
 		die( '-1' );
 	}
+
+	$data = array();
 
 	wp_parse_str( $_POST['data'], $data );
 

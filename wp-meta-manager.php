@@ -52,3 +52,14 @@ add_action( 'plugins_loaded', '_wp_meta_manager' );
 function wp_meta_manager_get_plugin_url() {
 	return plugin_dir_url( __FILE__ ) . 'wp-meta-manager/';
 }
+
+/**
+ * Return the asset version
+ *
+ * @since 1.0
+ *
+ * @return string
+ */
+function wp_meta_manager_get_asset_version() {
+	return 201702070001;
+}
