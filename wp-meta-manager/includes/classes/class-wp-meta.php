@@ -171,4 +171,40 @@ class WP_Meta {
 				$this->$key = $value;
 		}
 	}
+
+	/**
+	 * Update meta.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @param string $object_type
+	 * @param array $args
+	 * @return bool|WP_Error True on success, WP_Error on failure
+	 */
+	public function update( $object_type = '', $args = array() ) {
+		global $wpdb;
+
+		$type_object = wp_get_meta_type( $object_type );
+
+		$to_update = array();
+		$to_update[ $type_object->columns['meta_key'] ]   = $args['meta_key'];
+		$to_update[ $type_object->columns['meta_value'] ] = $args['meta_value'];
+		$to_update[ $type_object->columns['object_id'] ]  = $args['object_id'];
+
+		$ret = $wpdb->update(
+			$type_object->table_name,
+			$to_update,
+			array(
+				$type_object->columns['meta_id'] => $this->id
+			),
+			array(
+				'%s',
+				'%s',
+				'%d'
+			)
+		);
+
+		return $ret;
+	}
 }

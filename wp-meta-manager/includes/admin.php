@@ -18,6 +18,18 @@ function wp_meta_manager_admin_menu() {
 	$hook = add_management_page( __( 'Meta Manager', 'wp-meta-manager' ), __( 'Meta Manager', 'wp-meta-manager' ), 'manage_options', 'wp-meta-manager', 'wp_meta_manager_admin' );
 
 	add_action( 'load-' . $hook, 'wp_meta_manager_admin_help' );
+	add_action( 'load-' . $hook, 'wp_meta_manager_admin_scripts' );
+
+}
+
+/**
+ * Load Meta Manager scripts
+ *
+ * @since 1.0
+ */
+function wp_meta_manager_admin_scripts() {
+
+	wp_enqueue_script( 'wp-meta-manager-admin', wp_meta_manager_get_plugin_url() . 'assets/js/admin.js', array( 'jquery' ) );
 
 }
 
@@ -46,6 +58,11 @@ function wp_meta_manager_admin() {
 
 			<?php $list_table->display(); ?>
 		</form>
+		<?php if( $list_table->items ) : ?>
+			<?php foreach( $list_table->items as $item ) : ?>
+				<?php echo $list_table->edit_form( $item ); ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
 	</div>
 <?php
 }
@@ -123,5 +140,42 @@ function wp_meta_get_admin_tabs() {
  * @return void
  */
 function wp_meta_ajax_edit_response() {
-	echo '1';exit;
+
+	if( empty( $_POST['data'] ) ) {
+		die( '-1' );
+	}
+
+	wp_parse_str( $_POST['data'], $data );
+
+	if( empty( $data['wp-edit-meta-nonce'] ) ) {
+		die( '-2' );
+	}
+
+	if ( ! wp_verify_nonce( $data['wp-edit-meta-nonce'], 'wp-edit-meta-nonce' ) ) {
+		die( '-3' );
+	}
+
+	$meta_id     = absint( $data['meta_id'] );
+	$object_type = sanitize_key( $data['object_type'] );
+	$meta_key    = sanitize_key( $data['meta_key'] );
+	$meta_value  = sanitize_key( $data['meta_value'] );
+	$object_id   = absint( $data['object_id'] );
+	$meta        = get_meta( $object_type, $meta_id );
+
+	$ret = $meta->update( $object_type, array(
+		'meta_key'   => $meta_key,
+		'meta_value' => $meta_value,
+		'object_id'  => $object_id,
+	) );
+
+	if( $ret ) {
+
+		wp_send_json_success( array( 'success' => true, 'data' => $ret ) );
+
+	} else {
+
+		wp_send_json_error( array( 'success' => false, 'data' => $meta ) );
+
+	}
+
 }

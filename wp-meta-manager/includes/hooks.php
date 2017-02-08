@@ -15,4 +15,4 @@ add_action( 'admin_menu', 'wp_meta_manager_admin_menu' );
 add_action( 'admin_init', '_wp_register_meta_types', 0 );
 
 // Ajax views
-add_action( 'wp_ajax_edit-meta', 'wp_meta_ajax_edit_response' );
+add_action( 'wp_ajax_edit_meta', 'wp_meta_ajax_edit_response' );

@@ -107,26 +107,19 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function column_meta_id( $item = '' ) {
 		
-		$admin_url = admin_url( 'admin-ajax.php' ) . '#TB_inline?width=600&height=600&inlineId=wp-meta-edit';
-	
-		$edit_url = add_query_arg( array(
-			'object_type' => $item->object_type,
-			'action'  => 'edit-meta',
-			'nonce'   => wp_create_nonce( 'wp-edit-meta' )
-		), $admin_url );
-
+		$edit_url   = '#TB_inline?width=600&height=600&inlineId=wp-meta-edit-' . $item->id;
 		$delete_url = add_query_arg( array(
 			'object_type' => $item->object_type,
 			'action'  => 'delete-meta',
 			'nonce'   => wp_create_nonce( 'wp-delete-meta' )
-		), $admin_url );
+		) );
 
 		$actions = array(
 			'edit'   => '<a href="' . esc_url( $edit_url ) . '" class="wp-meta-action-link thickbox">' . __( 'Edit', 'wp-meta-manager' ) . '</a>',
 			'delete' => '<a href="' . esc_url( $delete_url ) . '"wp-meta-action-link delete" data-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '">' . __( 'Delete', 'wp-meta-manager' ) . '</a>'
 		);
 
-		return '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
+		return $item->id . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
 
 	}
 
@@ -305,6 +298,35 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		<?php
 	}
+
+	public function edit_form( $item ) {
+?>
+		<div id="wp-meta-edit-<?php echo $item->id; ?>" style="display:none;">
+			<h4><?php printf( __( 'Edit Meta ID %d', 'wp-meta-manager' ), $item->id ); ?></h4>
+			<form method="post" class="wp-meta-form wp-meta-edit-form">
+				<p>
+					<label for="wp-meta-edit-meta-key"><?php _e( 'Meta Key', 'wp-meta-manager' ); ?></label>
+					<input type="text" name="meta_key" id="wp-meta-edit-meta-key" value="<?php echo esc_attr( $item->meta_key ); ?>"/>	
+				</p>
+				<p>
+					<label for="wp-meta-edit-object-id"><?php _e( 'Object ID', 'wp-meta-manager' ); ?></label>
+					<input type="text" name="object_id" id="wp-meta-edit-object-id" value="<?php echo esc_attr( $item->object_id ); ?>"/>	
+				</p>
+				<p>
+					<label for="wp-meta-edit-meta-value"><?php _e( 'Meta Value', 'wp-meta-manager' ); ?></label><br/>
+					<textarea name="meta_value" id="wp-meta-edit-meta-value" rows="10"><?php echo esc_textarea( $item->meta_value ); ?></textarea>
+				</p>
+				<p>
+					<?php wp_nonce_field( 'wp-edit-meta-nonce', 'wp-edit-meta-nonce' ); ?>
+					<input type="hidden" name="meta_id" value="<?php echo esc_attr( $item->id ); ?>"/>	
+					<input type="hidden" name="object_type" value="<?php echo esc_attr( $item->object_type ); ?>"/>	
+					<input type="submit" id="wp-meta-edit-meta-submit" class="button-primary" value="<?php _e( 'Update', 'wp-meta-manager' ); ?>"/>	
+					<span class="spinner"></span>
+				</p>
+			</form>
+		</div>
+<?php
+	} 
 
 }
 
