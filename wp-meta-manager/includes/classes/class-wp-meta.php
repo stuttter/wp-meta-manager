@@ -32,11 +32,28 @@ class WP_Meta {
 
 			// Query for meta
 			$type_object = wp_get_meta_type( $type );
-			$_meta       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$type_object->table_name} WHERE {$type_object->columns['meta_id']} = %d LIMIT 1", $meta_id ) );
+			$result      = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$type_object->table_name} WHERE {$type_object->columns['meta_id']} = %d LIMIT 1", $meta_id ) );
 
 			// Bail if no meta found
-			if ( empty( $_meta ) || is_wp_error( $_meta ) ) {
+			if ( empty( $result ) || is_wp_error( $result ) ) {
 				return false;
+			}
+
+			// Setup for mapping values to columns
+			$_meta = new stdClass();
+			$map   = $type_object->columns;
+
+			// Loop through database results
+			foreach ( $result as $meta_key => $meta_value ) {
+
+				// Loop through meta column mappings
+				foreach ( $map as $map_key => $map_value ) {
+
+					// Map value to correct index
+					if ( $meta_key === $map_value ) {
+						$_meta->$map_key = $meta_value;
+					}
+				}
 			}
 
 			// Add type to object
