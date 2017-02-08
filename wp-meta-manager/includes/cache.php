@@ -18,6 +18,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
+ * @param string $type Object type name.
+ * @param array  $ids  Array of meta IDs.
+ *
  * @param array $ids ID list.
  */
 function wp_prime_meta_caches( $type = '', $ids = array() ) {
