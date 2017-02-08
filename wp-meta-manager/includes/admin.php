@@ -108,8 +108,7 @@ function wp_meta_get_admin_tab_html( $active_tab = '' ) {
  * @return array
  */
 function wp_meta_get_admin_tabs() {
-
-	$types = wp_get_meta_types();
+	$types = wp_get_meta_types( array(), 'objects' );
 	$tabs  = wp_list_pluck( $types, 'object_type' );
 
 	return apply_filters( 'wp_meta_admin_tabs', $tabs );
