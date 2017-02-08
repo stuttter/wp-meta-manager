@@ -12,22 +12,33 @@ class WP_Meta_Type {
 
 	public $object_type;
 	public $columns;
-	public $primary_column_id;
 
 	public function __construct( $object_type = '', $args = array() ) {
+		global $wpdb;
 
-		$defaults = array(
-			'name'              => '',
-			'columns'           => array(),
+		// Default columns
+		$columns = array(
+			'meta_id'    => 'meta_id',
+			'object_id'  => $object_type . '_id',
+			'meta_key'   => 'meta_key',
+			'meta_value' => 'meta_value'
 		);
 
-		$args = wp_parse_args( $args, $defaults );
+		// Parse the arguments
+		$r = wp_parse_args( $args, array(
+			'global'     => false,
+			'table_name' => $object_type . 'meta',
+			'columns'    => $columns,
+		) );
 
-		$this->name              = $args['name'];
-		$this->object_type       = $object_type;
-		$this->columns           = $args['columns'];
-		$this->primary_column_id = $args['columns']['primary_column_id'];
+		// Get prefix for global/site meta
+		$prefix = ( true === $r['global'] )
+			? $wpdb->base_prefix
+			: $wpdb->get_blog_prefix();
 
+		// Set object properties
+		$this->table_name  = $prefix . $r['table_name'];
+		$this->object_type = sanitize_key( $object_type );
+		$this->columns     = array_filter( $r['columns'] );
 	}
-
 }

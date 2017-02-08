@@ -17,46 +17,22 @@ function _wp_register_meta_types() {
 
 	// Register post meta table
 	wp_register_meta_type( 'post', array(
-		'name'                  => 'postmeta',
-		'columns'               => array(
-			'primary_column_id' => 'meta_id',
-			'object_id'         => 'post_id',
-			'key'               => 'meta_key',
-			'value'             => 'meta_value'
-		)
+		'table_name' => 'postmeta'
 	) );
 
 	// Register comment meta table
 	wp_register_meta_type( 'comment', array(
-		'name'                  => 'commentmeta',
-		'columns'               => array(
-			'primary_column_id' => 'meta_id',
-			'object_id'         => 'comment_id',
-			'key'               => 'meta_key',
-			'value'             => 'meta_value'
-		)
+		'table_name' => 'commentmeta'
 	) );
 
 	// Register term meta table
 	wp_register_meta_type( 'term', array(
-		'name'                  => 'termmeta',
-		'columns'               => array(
-			'primary_column_id' => 'meta_id',
-			'object_id'         => 'term_id',
-			'key'               => 'meta_key',
-			'value'             => 'meta_value'
-		)
+		'table_name' => 'termmeta'
 	) );
 
 	// Register user meta table
 	wp_register_meta_type( 'user', array(
-		'name'                  => 'usermeta',
-		'columns'               => array(
-			'primary_column_id' => 'umeta_id',
-			'object_id'         => 'user_id',
-			'key'               => 'meta_key',
-			'value'             => 'meta_value'
-		)
+		'table_name' => 'usermeta'
 	) );
 
 	do_action( 'wp_register_meta_types' );
@@ -101,28 +77,34 @@ function wp_get_meta_type( $object_type = '' ) {
  * @since 1.0
  */
 function wp_register_meta_type( $object_type = '', $args = array() ) {
-	
 	global $wp_meta_types;
 
-	if( empty( $object_type ) ) {
-		return false;
+	// Maybe instantiate the global
+	if ( ! is_array( $wp_meta_types ) ) {
+		$wp_meta_types = array();
 	}
 
-	$defaults = array(
-		'name'    => '',
-		'columns' => array()
-	);
+	// Sanitize the object type
+	$object_type = sanitize_key( $object_type );
 
-	$args = wp_parse_args( $args, $defaults );
-
-	if( empty( $args['name'] ) || empty( $args['columns'] ) ) {
-		return false;
+	if ( empty( $object_type ) || strlen( $object_type ) > 20 ) {
+		_doing_it_wrong( __FUNCTION__, __( 'Meta type names must be between 1 and 20 characters in length.' ), '1.0.0' );
+		return new WP_Error( 'meta_type_length_invalid', __( 'Meta type names must be between 1 and 20 characters in length.' ) );
 	}
 
+	// Add meta type object
 	$wp_meta_types[ $object_type ] = new WP_Meta_Type( $object_type, $args );
 
-	do_action( 'wp_register_meta_type', $object_type, $args );
+	/**
+	 * Fires after a meta type is registered.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string       $object_type        Meta type.
+	 * @param WP_Meta_Type $object_type_object Meta type object.
+	 * @param array        $args               Arguments used to register the meta type.
+	 */
+	do_action( 'wp_register_meta_type', $object_type, $wp_meta_types[ $object_type ], $args );
 
-	return true;
-
+	return $wp_meta_types[ $object_type ];
 }
