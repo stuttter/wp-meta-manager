@@ -52,10 +52,9 @@ class WP_Meta_List_table extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'          => '<input type="checkbox" />',
-			'id'          => esc_html__( 'Meta ID',  'wp-meta-manager' ),
-			'object_type' => esc_html__( 'Object Type', 'wp-meta-manager' ),
-			'key'         => esc_html__( 'Meta Key', 'wp-meta-manager' ),
-			'value'       => esc_html__( 'Meta Value', 'wp-meta-manager' ),
+			'meta_id'     => esc_html__( 'Meta ID',  'wp-meta-manager' ),
+			'meta_key'    => esc_html__( 'Meta Key', 'wp-meta-manager' ),
+			'meta_value'  => esc_html__( 'Meta Value', 'wp-meta-manager' ),
 		);
 	}
 
@@ -68,9 +67,9 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
-			'id'    => array( 'id', false ),
-			'key'   => array( 'key', false ),
-			'value' => array( 'value', false ),
+			'meta_id'    => array( 'meta_id', false ),
+			'meta_key'   => array( 'meta_key', false ),
+			'meta_value' => array( 'meta_value', false ),
 		);
 	}
 
@@ -101,6 +100,33 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
+	 * Output the meta_id columnd
+	 *
+	 * @since 1.0
+	 */
+	public function column_meta_id( $item = '' ) {
+		return $item->ID;
+	}
+
+	/**
+	 * Output the meta_key columnd
+	 *
+	 * @since 1.0
+	 */
+	public function column_meta_key( $item = '' ) {
+		return $item->meta_key;
+	}
+
+	/**
+	 * Output the meta_value columnd
+	 *
+	 * @since 1.0
+	 */
+	public function column_meta_value( $item = '' ) {
+		return $item->meta_value;
+	}
+
+	/**
 	 * Handle bulk action requests
 	 *
 	 * @since 1.0
@@ -121,8 +147,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function get_total_items() {
 		global $wpdb;
-
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->{$this->table_name} WHERE 1=1;" );
+		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM $this->table_name WHERE 1=1;" );
 
 	}
 
@@ -169,7 +194,7 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		// Set list table items to queried meta rows
 		$this->items = $meta_data_query->metas;
-
+		//var_dump( $this->items );
 		// Set the pagination arguments
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,

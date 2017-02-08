@@ -31,7 +31,7 @@ class WP_Meta_Data_Query {
 	 * @access protected
 	 * @var string
 	 */
-	protected $meta_type;
+	protected $meta_object;
 
 	/**
 	 * SQL query clauses.
@@ -294,13 +294,13 @@ class WP_Meta_Data_Query {
 
 		// Prime meta caches.
 		if ( $this->query_vars['update_meta_cache'] ) {
-			_prime_meta_caches( $meta_ids );
+			//_prime_meta_caches( $meta_ids );
 		}
 
 		// Fetch full meta objects from the primed cache.
 		$_metas = array();
 		foreach ( $meta_ids as $meta_id ) {
-			$_meta = get_meta( $meta_id );
+			$_meta = get_meta( $this->meta_object->object_type, $meta_id );
 			if ( ! empty( $_meta ) ) {
 				$_metas[] = $_meta;
 			}
@@ -317,7 +317,7 @@ class WP_Meta_Data_Query {
 		$_metas = apply_filters_ref_array( 'the_metas', array( $_metas, &$this ) );
 
 		// Convert to WP_Meta instances.
-		$this->metas = array_map( 'get_meta', $_metas );
+		$this->metas = $_metas;
 
 		return $this->metas;
 	}
