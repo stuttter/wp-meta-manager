@@ -28,7 +28,7 @@ function wp_meta_manager_admin_menu() {
  */
 function wp_meta_manager_admin() {
 
-	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'postmeta';
+	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
 ?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
