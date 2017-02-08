@@ -46,12 +46,13 @@ function wp_meta_manager_admin() {
 	}
 
 	add_thickbox();
-	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
+	$tab      = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
+	$base_url = admin_url( 'tools.php?page=wp-meta-manager' );
 
 ?>
 	<div class="wrap">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
-		<a href="<?php echo esc_url( add_query_arg( array( 'view' => 'add-new', 'object_type' => $tab ) ) ); ?>" class="page-title-action"><?php printf( __( 'Add New %s Meta', 'wp-meta-manager' ), ucwords( $tab ) ); ?></a>
+		<a href="<?php echo esc_url( add_query_arg( array( 'view' => 'add-new', 'object_type' => $tab ), $base_url ) ); ?>" class="page-title-action"><?php printf( __( 'Add New %s Meta', 'wp-meta-manager' ), ucwords( $tab ) ); ?></a>
 		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( $tab ); ?></h2>
 <?php
 		$page       = isset( $_REQUEST['page'] ) ? absint( $_REQUEST['page'] ) : 1;
@@ -72,6 +73,33 @@ function wp_meta_manager_admin() {
 		<?php endif; ?>
 	</div>
 <?php
+}
+
+/**
+ * Render Meta Manager admin notices
+ *
+ * @since 1.0
+ */
+function wp_meta_manager_admin_notices() {
+
+	if( empty( $_GET['wp-meta-message'] ) ) {
+		return;
+	}
+
+	switch( $_GET['wp-meta-message'] ) {
+
+		case 'success' :
+
+			echo '<div class="updated"><p>' . __( 'Meta data added.', 'wp-meta-manager' ) . '</p></div>';
+			break;
+
+		case 'failure' :
+
+			echo '<div class="error"><p>' . __( 'Meta data could not be added.', 'wp-meta-manager' ) . '</p></div>';
+			break;
+
+	}
+
 }
 
 /**
@@ -273,6 +301,6 @@ function wp_meta_process_add_meta() {
 
 	}
 
-	wp_redirect( admin_url( 'tools.php?page=wp-meta-manager&tab=' . $object_type . '&message=' . $message ) ); exit;
+	wp_redirect( admin_url( 'tools.php?page=wp-meta-manager&tab=' . $object_type . '&wp-meta-message=' . $message ) ); exit;
 
 }
