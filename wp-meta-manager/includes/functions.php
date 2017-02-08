@@ -180,3 +180,35 @@ function get_meta( $object_type = '', $meta = 0 ) {
 
 	return $_meta;
 }
+
+/**
+ * Add new meta data
+ *
+ * @since 1.0
+ */
+function wp_add_meta( $object_type = '', $args = array() ) {
+
+	global $wpdb;
+
+	$type_object = wp_get_meta_type( $object_type );
+
+	$data = array();
+	$data[ $type_object->columns['meta_key'] ]   = $args['meta_key'];
+	$data[ $type_object->columns['meta_value'] ] = $args['meta_value'];
+	$data[ $type_object->columns['object_id'] ]  = $args['object_id'];
+
+	$ret = $wpdb->insert( $type_object->table_name, $data, array( '%s', '%s', '%d' ) );
+
+	/**
+	 * Fires after a new meta row is created.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string       $object_type Meta type.
+	 * @param array        $args        Arguments used to create the meta data.
+	 * @param WP_Meta_Type $type_object Meta type object.
+	 */
+	do_action( 'wp_add_meta', $object_type, $args, $type_object );
+
+	return $ret;
+}

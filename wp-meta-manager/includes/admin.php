@@ -40,11 +40,18 @@ function wp_meta_manager_admin_scripts() {
  */
 function wp_meta_manager_admin() {
 
+	if( ! empty( $_GET['view'] ) && 'add-new' == $_GET['view'] ) {
+		wp_meta_manager_add_new();
+		return;
+	}
+
 	add_thickbox();
 	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
+
 ?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
+		<a href="<?php echo esc_url( add_query_arg( array( 'view' => 'add-new', 'object_type' => $tab ) ) ); ?>" class="page-title-action"><?php printf( __( 'Add New %s Meta', 'wp-meta-manager' ), ucwords( $tab ) ); ?></a>
 		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( $tab ); ?></h2>
 <?php
 		$page       = isset( $_REQUEST['page'] ) ? absint( $_REQUEST['page'] ) : 1;
@@ -217,5 +224,55 @@ function wp_meta_ajax_delete_response() {
 		wp_send_json_error( array( 'success' => false ) );
 
 	}
+
+}
+
+/**
+ * Process meta data delete request
+ *
+ * @since 1.0
+ *
+ * @return void
+ */
+function wp_meta_process_add_meta() {
+
+	if( empty( $_POST['action'] ) || 'add_meta' !== $_POST['action'] ) {
+		return;
+	}
+
+	if( empty( $_POST['wp-add-meta-nonce'] ) ) {
+		return;
+	}
+
+	if( empty( $_POST['object_type'] ) ) {
+		return;
+	}
+
+	if ( ! wp_verify_nonce( $_POST['wp-add-meta-nonce'], 'wp-add-meta-nonce' ) ) {
+		wp_die( __( 'Nonce verification failed', 'wp-meta-manager' ), __( 'Error', 'wp-meta-manager' ), array( 'response' => 403 ) );
+	}
+
+	$object_type = sanitize_key( $_POST['object_type'] );
+	$object_id   = absint( $_POST['object_id'] );
+	$meta_key    = wp_unslash( $_POST['meta_key'] );
+	$meta_value  = wp_unslash( $_POST['meta_value'] );
+	$meta_value  = sanitize_meta( $meta_key, $meta_value, $object_type );
+	$args        = array(
+		'object_id'  => $object_id,
+		'meta_key'   => $meta_key,
+		'meta_value' => $meta_value
+	);
+
+	if( wp_add_meta( $object_type, $args ) ) {
+
+		$message = 'success';
+
+	} else {
+
+		$message = 'failure';
+
+	}
+
+	wp_redirect( admin_url( 'tools.php?page=wp-meta-manager&tab=' . $object_type . '&message=' . $message ) ); exit;
 
 }
