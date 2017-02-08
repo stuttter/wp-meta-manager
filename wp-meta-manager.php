@@ -35,6 +35,7 @@ function _wp_meta_manager() {
 	require_once $plugin_path . 'includes/capabilities.php';
 	require_once $plugin_path . 'includes/functions.php';
 	require_once $plugin_path . 'includes/hooks.php';
+	require_once $plugin_path . 'includes/plugins.php';
 
 	// Load translations
 	load_plugin_textdomain( 'wp-meta-manager' );

@@ -8,8 +8,9 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-// Admin menus
+// Admin menus and notices
 add_action( 'admin_menu', 'wp_meta_manager_admin_menu' );
+add_action( 'admin_notices', 'wp_meta_manager_admin_notices' );
 
 // Register meta tables
 add_action( 'admin_init', '_wp_register_meta_types', 0 );
