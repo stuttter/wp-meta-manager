@@ -27,7 +27,7 @@ function _wp_meta_manager() {
 	// Required Files
 	require_once $plugin_path . 'includes/admin.php';
 	require_once $plugin_path . 'includes/capabilities.php';
-	require_once $plugin_path . 'includes/class-wp-meta-type.php';
+	require_once $plugin_path . 'includes/classes/class-wp-meta-type.php';
 	require_once $plugin_path . 'includes/functions.php';
 	require_once $plugin_path . 'includes/hooks.php';
 
