@@ -51,6 +51,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'          => '<input type="checkbox" />',
+			'meta_id'     => esc_html__( 'ID',         'wp-meta-manager' ),
 			'meta_key'    => esc_html__( 'Meta Key',   'wp-meta-manager' ),
 			'object_id'   => esc_html__( 'Object ID',  'wp-meta-manager' ),
 			'meta_value'  => esc_html__( 'Meta Value', 'wp-meta-manager' ),
@@ -66,6 +67,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
+			'meta_id'    => array( 'meta_id',    false ),
 			'object_id'  => array( 'object_id',  false ),
 			'meta_key'   => array( 'meta_key',   false ),
 			'meta_value' => array( 'meta_value', false ),
@@ -96,6 +98,15 @@ class WP_Meta_List_table extends WP_List_Table {
 			$this->_args['singular'],
 			$item->id
 		);
+	}
+
+	/**
+	 * Output the meta_id column
+	 *
+	 * @since 1.0
+	 */
+	public function column_meta_id( $item = '' ) {
+		return $item->id;
 	}
 
 	/**
