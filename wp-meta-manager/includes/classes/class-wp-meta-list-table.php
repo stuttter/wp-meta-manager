@@ -223,7 +223,7 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		// Set list table items to queried meta rows
 		$this->items = $meta_data_query->metas;
-		//var_dump( $this->items );
+
 		// Set the pagination arguments
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,
