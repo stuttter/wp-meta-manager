@@ -96,17 +96,38 @@ class WP_Meta_List_table extends WP_List_Table {
 		return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
 			$this->_args['singular'],
-			$item->ID
+			$item->id
 		);
 	}
 
 	/**
-	 * Output the meta_id column
+	 * Output the meta_id column with row actions
 	 *
 	 * @since 1.0
 	 */
 	public function column_meta_id( $item = '' ) {
-		return $item->id;
+		
+		$admin_url = admin_url( 'admin-ajax.php' ) . '#TB_inline?width=600&height=600&inlineId=wp-meta-edit';
+	
+		$edit_url = add_query_arg( array(
+			'object_type' => $item->object_type,
+			'action'  => 'edit-meta',
+			'nonce'   => wp_create_nonce( 'wp-edit-meta' )
+		), $admin_url );
+
+		$delete_url = add_query_arg( array(
+			'object_type' => $item->object_type,
+			'action'  => 'delete-meta',
+			'nonce'   => wp_create_nonce( 'wp-delete-meta' )
+		), $admin_url );
+
+		$actions = array(
+			'edit'   => '<a href="' . esc_url( $edit_url ) . '" class="wp-meta-action-link thickbox">' . __( 'Edit', 'wp-meta-manager' ) . '</a>',
+			'delete' => '<a href="' . esc_url( $delete_url ) . '"wp-meta-action-link delete" data-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '">' . __( 'Delete', 'wp-meta-manager' ) . '</a>'
+		);
+
+		return '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
+
 	}
 
 	/**
@@ -282,6 +303,7 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		<?php
 	}
+
 }
 
 endif;

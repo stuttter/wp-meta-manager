@@ -28,6 +28,7 @@ function wp_meta_manager_admin_menu() {
  */
 function wp_meta_manager_admin() {
 
+	add_thickbox();
 	$tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
 ?>
 	<div class="wrap">
@@ -112,4 +113,15 @@ function wp_meta_get_admin_tabs() {
 	$tabs  = wp_list_pluck( $types, 'object_type' );
 
 	return apply_filters( 'wp_meta_admin_tabs', $tabs );
+}
+
+/**
+ * Displays the edit view with ajax
+ *
+ * @since 1.0
+ *
+ * @return void
+ */
+function wp_meta_ajax_edit_response() {
+	echo '1';exit;
 }
