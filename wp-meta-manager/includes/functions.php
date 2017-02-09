@@ -16,25 +16,33 @@ defined( 'ABSPATH' ) || exit;
 function _wp_register_meta_types() {
 
 	// Post meta table
-	wp_register_meta_type( 'post' );
+	wp_register_meta_type( 'post', array(
+		'edit_callback' => 'get_edit_post_link'
+	) );
 
 	// Comment meta table
-	wp_register_meta_type( 'comment' );
+	wp_register_meta_type( 'comment', array(
+		'edit_callback' => 'get_edit_comment_link'
+	) );
 
 	// Term meta table
-	wp_register_meta_type( 'term' );
+	wp_register_meta_type( 'term', array(
+		'edit_callback' => 'get_edit_term_link'
+	) );
 
 	// User meta table
 	wp_register_meta_type( 'user', array(
 		'columns' => array(
 			'meta_id' => 'umeta_id'
-		)
+		),
+		'edit_callback' => 'get_edit_user_link'
 	) );
 
 	// Network meta
 	if ( is_multisite() ) {
 		wp_register_meta_type( 'site', array(
-			'global' => true
+			'global' => true,
+			'edit_callback' => 'wp_meta_get_site_edit_link'
 		) );
 	}
 
@@ -211,4 +219,13 @@ function wp_add_meta( $object_type = '', $args = array() ) {
 	do_action( 'wp_add_meta', $object_type, $args, $type_object );
 
 	return $ret;
+}
+
+/**
+ * Retrieve the URL to the edit site screen
+ *
+ * @since 1.0
+ */
+function wp_meta_get_site_edit_link( $site_id = 0 ) {
+	return network_admin_url( 'site-info.php?id=' . absint( $site_id ) );
 }

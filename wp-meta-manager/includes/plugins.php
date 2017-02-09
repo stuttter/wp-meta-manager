@@ -20,7 +20,10 @@ function wp_meta_add_easy_digital_downloads_meta() {
 	}
 
 	// Register customer meta
-	wp_register_meta_type( 'customer', array( 'table_name' => 'edd_customermeta' ) );
+	wp_register_meta_type( 'customer', array( 
+		'table_name' => 'edd_customermeta',
+		'object_url' => admin_url( 'edit.php?post_type=download&page=edd-customers&view=overview&id=%d' )
+	) );
 
 }
 add_action( 'wp_register_meta_types', 'wp_meta_add_easy_digital_downloads_meta' );

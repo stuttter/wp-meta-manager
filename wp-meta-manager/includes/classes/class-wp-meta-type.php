@@ -32,6 +32,17 @@ class WP_Meta_Type {
 	public $columns = array();
 
 	/**
+	 * Callback function to retrieve the edit URL for an object.
+	 *
+	 * Object ID (e.g. post ID) is passed as a parameter to the callback function.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var string
+	 */
+	public $edit_callback = '';
+
+	/**
 	 * Setup the object properties
 	 *
 	 * @since 1.0.0
@@ -48,9 +59,10 @@ class WP_Meta_Type {
 
 		// Parse root arguments
 		$r = wp_parse_args( $args, array(
-			'global'     => false,
-			'table_name' => $object_type . 'meta',
-			'columns'    => array()
+			'global'        => false,
+			'table_name'    => $object_type . 'meta',
+			'columns'       => array(),
+			'edit_callback' => ''
 		) );
 
 		// Parse columns argument
@@ -67,8 +79,10 @@ class WP_Meta_Type {
 			: $wpdb->get_blog_prefix();
 
 		// Set object properties
-		$this->table_name  = $prefix . $r['table_name'];
-		$this->object_type = sanitize_key( $object_type );
-		$this->columns     = array_filter( $r['columns'] );
+		$this->table_name    = $prefix . $r['table_name'];
+		$this->object_type   = sanitize_key( $object_type );
+		$this->columns       = array_filter( $r['columns'] );
+		$this->edit_callback = $r['edit_callback'];
 	}
+
 }

@@ -138,7 +138,17 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * @since 1.0
 	 */
 	public function column_object_id( $item = '' ) {
-		return $item->object_id;
+
+		$meta_type = wp_get_meta_type( $item->object_type );
+	
+		if( ! empty( $meta_type->edit_callback ) && is_callable( $meta_type->edit_callback ) ) {
+			$url   = call_user_func( $meta_type->edit_callback, $item->object_id );
+			$value = '<a href="' . esc_url( $url ) . '">' . $item->object_id . '</a>';
+		} else {
+			$value = $item->object_id;
+		}
+
+		return $value;
 	}
 
 	/**
