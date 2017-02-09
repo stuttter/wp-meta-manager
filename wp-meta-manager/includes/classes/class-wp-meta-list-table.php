@@ -230,13 +230,15 @@ class WP_Meta_List_table extends WP_List_Table {
 		$offset       = $per_page * ( $this->get_pagenum() - 1 );
 		$orderby      = ( ! empty( $_REQUEST['orderby'] ) ) ? sanitize_key( $_REQUEST['orderby'] ) : 'meta_id';
 		$order        = ( ! empty( $_REQUEST['order']   ) ) ? sanitize_key( $_REQUEST['order']   ) : 'asc';
+		$search       = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 
 		// Query for replies
 		$meta_data_query  = new WP_Meta_Data_Query( array(
 			'number'      => $per_page,
 			'offset'      => $offset,
 			'orderby'     => $orderby,
-			'order'       => ucwords( $order )
+			'order'       => ucwords( $order ),
+			'search'      => $search
 		), $this->object_type );
 
 		// Get the total number of replies, for pagination
@@ -323,6 +325,46 @@ class WP_Meta_List_table extends WP_List_Table {
 		<?php
 	}
 
+	/**
+	 * Show the search field
+	 *
+	 * @access public
+	 * @since 1.0
+	 *
+	 * @param string $text Label for the search box
+	 * @param string $input_id ID of the search box
+	 *
+	 * @return svoid
+	 */
+	public function search_box( $text, $input_id ) {
+
+		if ( empty( $_REQUEST['s'] ) && ! $this->has_items() ) {
+			return;
+		}
+
+		$input_id = $input_id . '-search-input';
+
+		if ( ! empty( $_REQUEST['orderby'] ) )
+			echo '<input type="hidden" name="orderby" value="' . esc_attr( $_REQUEST['orderby'] ) . '" />';
+		if ( ! empty( $_REQUEST['order'] ) )
+			echo '<input type="hidden" name="order" value="' . esc_attr( $_REQUEST['order'] ) . '" />';
+		?>
+		<p class="search-box">
+			<label class="screen-reader-text" for="<?php echo $input_id ?>"><?php echo $text; ?>:</label>
+			<input type="search" id="<?php echo $input_id ?>" name="s" value="<?php _admin_search_query(); ?>" />
+			<?php submit_button( $text, 'button', false, false, array( 'ID' => 'search-submit' ) ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Edit form HTML
+	 *
+	 * @access public
+	 * @since 1.0
+	 *
+	 * @return svoid
+	 */
 	public function edit_form( $item ) {
 ?>
 		<div id="wp-meta-edit-<?php echo $item->id; ?>" style="display:none;">

@@ -60,15 +60,14 @@ function wp_meta_manager_admin() {
 		<a href="<?php echo esc_url( add_query_arg( array( 'view' => 'add-new', 'object_type' => $tab ), $base_url ) ); ?>" class="page-title-action"><?php printf( __( 'Add New %s Meta', 'wp-meta-manager' ), ucwords( $tab ) ); ?></a>
 		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( $tab ); ?></h2>
 <?php
-		$page       = isset( $_REQUEST['page'] ) ? absint( $_REQUEST['page'] ) : 1;
 		$list_table = new WP_Meta_List_table();
 		$list_table->object_type = $tab;
 		$list_table->table_name  = wp_get_meta_type( $tab )->table_name;
 		$list_table->prepare_items();
 ?>
 		<form id="wp-meta-data" method="get">
-			<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
-
+			<input type="hidden" name="page" value="wp-meta-manager" />
+			<?php $list_table->search_box( __( 'Search', 'wp-meta-data' ), 'wp-meta-data' ); ?>
 			<?php $list_table->display(); ?>
 		</form>
 		<?php if( $list_table->items ) : ?>

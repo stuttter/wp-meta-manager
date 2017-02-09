@@ -486,11 +486,12 @@ class WP_Meta_Data_Query {
 			$search_columns = array();
 
 			if ( $this->query_vars['search_columns'] ) {
-				$search_columns = array_intersect( $this->query_vars['search_columns'], array( 'domain', 'status', 'type' ) );
+
+				$search_columns = array_intersect( $this->query_vars['search_columns'], array_values( $this->meta_object->columns ) );
 			}
 
 			if ( ! $search_columns ) {
-				$search_columns = array( 'domain', 'status', 'type' );
+				$search_columns = array_values( $this->meta_object->columns );
 			}
 
 			/**
