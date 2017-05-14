@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Include the Meta Manager files
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function _wp_meta_manager() {
 
@@ -46,7 +46,7 @@ add_action( 'plugins_loaded', '_wp_meta_manager' );
 /**
  * Return the plugin URL
  *
- * @since 1.0
+ * @since 1.0.0
  *
  * @return string
  */
@@ -57,7 +57,7 @@ function wp_meta_manager_get_plugin_url() {
 /**
  * Return the asset version
  *
- * @since 1.0
+ * @since 1.0.0
  *
  * @return string
  */

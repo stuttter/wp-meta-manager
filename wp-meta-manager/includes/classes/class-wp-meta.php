@@ -2,7 +2,6 @@
 
 /**
  * Meta Object
- *
  */
 
 // Exit if accessed directly
@@ -10,23 +9,58 @@ defined( 'ABSPATH' ) || exit;
 
 class WP_Meta {
 
-	public $id;
-	public $object_id;
-	public $object_type;
-	public $key;
-	public $value;
+	/**
+	 * @var int $id ID of meta data
+	 */
+	public $id = 0;
 
+	/**
+	 * @var int $object_id ID of object
+	 */
+	public $object_id = 0;
+
+	/**
+	 * @var string $object_type Type of object
+	 */
+	public $object_type = '';
+
+	/**
+	 * @var string $key Meta data key
+	 */
+	public $key = '';
+
+	/**
+	 * @var mixed $value Meta data value
+	 */
+	public $value = null;
+
+	/**
+	 * Get a WP_Meta instance
+	 *
+	 * @since 1.0.0
+	 *
+	 * @global WPDB $wpdb
+	 *
+	 * @param string $type
+	 * @param int $meta_id
+	 *
+	 * @return WP_Meta|boolean
+	 */
 	public static function get_instance( $type = '', $meta_id = 0 ) {
 		global $wpdb;
 
+		// Bail if no meta ID
 		$meta_id = (int) $meta_id;
-		if ( ! $meta_id ) {
+		if ( empty( $meta_id ) ) {
 			return false;
 		}
 
+		// Sanitize the type
+		$type = sanitize_key( $type );
+
 		// Check cache
-		$cache_key = $type . '_meta_data';
-		$_meta     = wp_cache_get( $meta_id, $cache_key );
+		$cache_group = "{$type}_meta_manager";
+		$_meta       = wp_cache_get( $meta_id, $cache_group );
 
 		// Cache miss
 		if ( false === $_meta ) {
@@ -44,7 +78,7 @@ class WP_Meta {
 			$_meta = self::normalize( $type, $result );
 
 			// Cache object
-			wp_cache_add( $meta_id, $_meta, $cache_key );
+			wp_cache_add( $meta_id, $_meta, $cache_group );
 		}
 
 		// Return WP_Meta object
@@ -61,6 +95,7 @@ class WP_Meta {
 	 * @return object
 	 */
 	public static function normalize( $type = '', $meta = '' ) {
+		$type        = sanitize_key( $type );
 		$type_object = wp_get_meta_type( $type );
 		$_meta       = new stdClass();
 		$map         = $type_object->columns;
@@ -97,20 +132,8 @@ class WP_Meta {
 	 */
 	public function __construct( $meta ) {
 		foreach ( get_object_vars( $meta ) as $key => $value) {
-			$this->$key = $value;
+			$this->{$key} = $value;
 		}
-	}
-
-	/**
-	 * Converts an object to array.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @return array Object as array.
-	 */
-	public function to_array() {
-		return get_object_vars( $this );
 	}
 
 	/**
@@ -127,7 +150,7 @@ class WP_Meta {
 			case 'ID':
 			case 'id':
 			case 'meta_id':
-				return (int) $this->id;
+				return absint( $this->id );
 
 			case 'object_id':
 			case $this->object_type . '_id':
@@ -185,7 +208,7 @@ class WP_Meta {
 				$this->object_id = (int) $value;
 				break;
 			default:
-				$this->$key = $value;
+				$this->{$key} = $value;
 		}
 	}
 

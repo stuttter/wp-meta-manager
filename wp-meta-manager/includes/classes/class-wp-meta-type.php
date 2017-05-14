@@ -17,7 +17,7 @@ class WP_Meta_Type {
 	 *
 	 * @var string
 	 */
-	public $object_type;
+	public $object_type = '';
 
 	/**
 	 * Array of database column names.
@@ -57,6 +57,9 @@ class WP_Meta_Type {
 	public function __construct( $object_type = '', $args = array() ) {
 		global $wpdb;
 
+		// Sanitize the object type
+		$object_type = sanitize_key( $object_type );
+
 		// Parse root arguments
 		$r = wp_parse_args( $args, array(
 			'global'        => false,
@@ -80,9 +83,8 @@ class WP_Meta_Type {
 
 		// Set object properties
 		$this->table_name    = $prefix . $r['table_name'];
-		$this->object_type   = sanitize_key( $object_type );
+		$this->object_type   = $object_type;
 		$this->columns       = array_filter( $r['columns'] );
 		$this->edit_callback = $r['edit_callback'];
 	}
-
 }

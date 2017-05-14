@@ -1,3 +1,7 @@
 .wp-list-table.meta_rows .column-meta_id {
 	width: 60px;
 }
+
+form#wp-meta-data {
+	margin-top: 20px;
+}

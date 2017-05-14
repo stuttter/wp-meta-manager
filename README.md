@@ -20,11 +20,11 @@ https://wordpress.org/support/plugin/wp-meta-manager/
 /**
  * Register custom meta.
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function my_prefix_wp_meta_add_custom_meta() {
 
-	if( ! function_exists( 'my_plugin_function' ) ) {
+	if ( ! function_exists( 'my_plugin_function' ) ) {
 		return;
 	}
 

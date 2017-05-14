@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Register meta types
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function _wp_register_meta_types() {
 
@@ -161,10 +161,11 @@ function wp_register_meta_type( $object_type = '', $args = array() ) {
 /**
  * Get meta
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function get_meta( $object_type = '', $meta = 0 ) {
 
+	// Try to get meta
 	if ( $meta instanceof WP_Meta ) {
 		$_meta = $meta;
 	} elseif ( is_object( $meta ) ) {
@@ -173,7 +174,8 @@ function get_meta( $object_type = '', $meta = 0 ) {
 		$_meta = WP_Meta::get_instance( $object_type, $meta );
 	}
 
-	if ( ! $_meta ) {
+	// Bail if no meta
+	if ( empty( $_meta ) ) {
 		return null;
 	}
 
@@ -192,10 +194,9 @@ function get_meta( $object_type = '', $meta = 0 ) {
 /**
  * Add new meta data
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function wp_add_meta( $object_type = '', $args = array() ) {
-
 	global $wpdb;
 
 	$type_object = wp_get_meta_type( $object_type );
@@ -224,7 +225,7 @@ function wp_add_meta( $object_type = '', $args = array() ) {
 /**
  * Retrieve the URL to the edit site screen
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function wp_meta_get_site_edit_link( $site_id = 0 ) {
 	return network_admin_url( 'site-info.php?id=' . absint( $site_id ) );

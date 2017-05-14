@@ -28,8 +28,10 @@ function wp_prime_meta_caches( $type = '', $ids = array() ) {
 
 	$type_object    = wp_get_meta_type( $type );
 	$non_cached_ids = _get_non_cached_ids( $ids, $type . '_meta_data' );
+
 	if ( ! empty( $non_cached_ids ) ) {
-		$fresh_metas = $wpdb->get_results( sprintf( "SELECT * FROM {$type_object->table_name} WHERE id IN (%s)", join( ",", array_map( 'intval', $non_cached_ids ) ) ) );
+		$in_items    = join( ",", array_map( 'intval', $non_cached_ids ) );
+		$fresh_metas = $wpdb->get_results( sprintf( "SELECT * FROM {$type_object->table_name} WHERE id IN (%s)", $in_items ) );
 
 		wp_update_meta_cache( $type, $fresh_metas );
 	}

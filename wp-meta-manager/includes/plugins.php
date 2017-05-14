@@ -11,11 +11,11 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Register EDD's customer meta.
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function wp_meta_add_easy_digital_downloads_meta() {
 
-	if( ! function_exists( 'EDD' ) ) {
+	if ( ! function_exists( 'EDD' ) ) {
 		return;
 	}
 
@@ -30,11 +30,11 @@ add_action( 'wp_register_meta_types', 'wp_meta_add_easy_digital_downloads_meta' 
 /**
  * Register AffiliateWP's affiliate meta.
  *
- * @since 1.0
+ * @since 1.0.0
  */
 function wp_meta_add_affiliatewp_meta() {
 
-	if( ! function_exists( 'affiliate_wp' ) ) {
+	if ( ! function_exists( 'affiliate_wp' ) ) {
 		return;
 	}
 

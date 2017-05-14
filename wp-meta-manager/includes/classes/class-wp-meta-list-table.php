@@ -3,7 +3,7 @@
 /**
  * WP Meta List Table
  *
- * @since      1.0
+ * @since 1.0.0
  *
  * @see WP_List_Table
  */
@@ -18,17 +18,24 @@ if ( class_exists( 'WP_List_Table' ) ) :
 /**
  * Meta data list table
  *
- * @since 1.0
+ * @since 1.0.0
  */
 class WP_Meta_List_table extends WP_List_Table {
 
+	/**
+	 * @var string Type of object
+	 */
 	public $object_type;
+
+	/**
+	 * @var string Name of table
+	 */
 	public $table_name;
 
 	/**
 	 * The main constructor method
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function __construct( $args = array() ) {
 		$args = array(
@@ -36,13 +43,14 @@ class WP_Meta_List_table extends WP_List_Table {
 			'plural'   => 'meta_rows',
 			'ajax'     => false
 		);
+
 		parent::__construct( $args );
 	}
 
 	/**
 	 * Setup the list-table columns
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @see WP_List_Table::::single_row_columns()
 	 *
@@ -61,7 +69,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	/**
 	 * Define the sortable columns
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @return array An associative array
 	 */
@@ -77,7 +85,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	/**
 	 * Setup the bulk actions
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @return array An associative array containing all the bulk actions
 	 */
@@ -90,42 +98,48 @@ class WP_Meta_List_table extends WP_List_Table {
 	/**
 	 * Output the check-box column for bulk actions (if we implement them)
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function column_cb( $item = '' ) {
 		return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
-			$this->_args['singular'],
-			$item->id
+			esc_attr( $this->_args['singular'] ),
+			absint( $item->id )
 		);
 	}
 
 	/**
 	 * Output the meta_id column
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function column_meta_id( $item = '' ) {
-		return $item->id;
+
+		// meta_id column is "unsigned" so cannot ever be negative
+		return absint( $item->id );
 	}
 
 	/**
 	 * Output the meta_key column
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function column_meta_key( $item = '' ) {
-	
+
+		// Edit currently uses a thickbox
 		$edit_url   = '#TB_inline?width=600&height=600&inlineId=wp-meta-edit-' . $item->id;
+
+		// Delete
 		$delete_url = add_query_arg( array(
 			'object_type' => $item->object_type,
-			'action'  => 'delete-meta',
-			'nonce'   => wp_create_nonce( 'wp-delete-meta' )
+			'action'      => 'delete-meta',
+			'nonce'       => wp_create_nonce( 'wp-delete-meta' )
 		) );
 
+		// Actions
 		$actions = array(
-			'edit'   => '<a href="' . esc_url( $edit_url ) . '" class="wp-meta-action-link thickbox">' . __( 'Edit', 'wp-meta-manager' ) . '</a>',
-			'delete' => '<a href="' . esc_url( $delete_url ) . '" class="wp-meta-action-link wp-meta-delete delete" data-meta-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '" data-nonce="' . wp_create_nonce( 'wp-meta-delete' ) . '">' . __( 'Delete', 'wp-meta-manager' ) . '</a>'
+			'edit'   => '<a href="' . esc_url( $edit_url   ) . '" class="wp-meta-action-link thickbox">' . esc_html__( 'Edit', 'wp-meta-manager' ) . '</a>',
+			'delete' => '<a href="' . esc_url( $delete_url ) . '" class="wp-meta-action-link wp-meta-delete delete" data-meta-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '" data-nonce="' . wp_create_nonce( 'wp-meta-delete' ) . '">' . esc_html__( 'Delete', 'wp-meta-manager' ) . '</a>'
 		);
 
 		return $item->meta_key . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
@@ -135,15 +149,19 @@ class WP_Meta_List_table extends WP_List_Table {
 	/**
 	 * Output the meta_id column
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function column_object_id( $item = '' ) {
 
+		// Get the meta type
 		$meta_type = wp_get_meta_type( $item->object_type );
-	
-		if( ! empty( $meta_type->edit_callback ) && is_callable( $meta_type->edit_callback ) ) {
+
+		// Use the meta callback (if one exists)
+		if ( ! empty( $meta_type->edit_callback ) && is_callable( $meta_type->edit_callback ) ) {
 			$url   = call_user_func( $meta_type->edit_callback, $item->object_id );
-			$value = '<a href="' . esc_url( $url ) . '">' . $item->object_id . '</a>';
+			$value = '<a href="' . esc_url( $url ) . '">' . esc_html( $item->object_id ) . '</a>';
+
+		// Use the raw object ID
 		} else {
 			$value = $item->object_id;
 		}
@@ -154,24 +172,36 @@ class WP_Meta_List_table extends WP_List_Table {
 	/**
 	 * Output the meta_value column
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function column_meta_value( $item = '' ) {
-		return is_serialized( $item->meta_value )
-			? '<code>serialized</code>'
-			: '<code>' . $item->meta_value . '</code>';
+
+		// Empty String
+		if ( '' == $item->meta_value ) {
+			$retval = esc_html__( 'Empty String', 'wp-meta-manager' );
+
+		// Array
+		} elseif ( is_serialized( $item->meta_value ) ) {
+			$retval = esc_html__( 'Serialized Array', 'wp-meta-manager' );
+
+		// Some value
+		} else {
+			$retval = '<code>' . esc_html( $item->meta_value ) . '</code>';
+		}
+
+		return $retval;
 	}
 
 	/**
 	 * Generates content for a single row of the table
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param object $item The current item
 	 */
 	public function single_row( $item ) {
-		echo '<tr id="wp-meta-' . $item->id . '">';
+		echo '<tr id="wp-meta-' . esc_attr( $item->id ) . '">';
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}
@@ -179,7 +209,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	/**
 	 * Handle bulk action requests
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function process_bulk_action() {
 		switch ( $this->current_action() ) {
@@ -193,18 +223,18 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * Get the total number of rows
 	 *
 	 * @todo  Cache this
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function get_total_items() {
 		global $wpdb;
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM $this->table_name WHERE 1=1;" );
 
+		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table_name} WHERE 1=1;" );
 	}
 
 	/**
 	 * Prepare the list-table items for display
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @uses $this->_column_headers
 	 * @uses $this->items
@@ -226,19 +256,31 @@ class WP_Meta_List_table extends WP_List_Table {
 		$this->process_bulk_action();
 
 		// Query parameters
-		$per_page     = 20;
-		$offset       = $per_page * ( $this->get_pagenum() - 1 );
-		$orderby      = ( ! empty( $_REQUEST['orderby'] ) ) ? sanitize_key( $_REQUEST['orderby'] ) : 'meta_id';
-		$order        = ( ! empty( $_REQUEST['order']   ) ) ? sanitize_key( $_REQUEST['order']   ) : 'asc';
-		$search       = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
+		$per_page = 20;
+		$offset   = $per_page * ( $this->get_pagenum() - 1 );
+
+		// Order by
+		$orderby  = ! empty( $_REQUEST['orderby'] )
+			? sanitize_key( $_REQUEST['orderby'] )
+			: 'meta_id';
+
+		// Order
+		$order = ! empty( $_REQUEST['order'] )
+			? sanitize_key( $_REQUEST['order'] )
+			: 'asc';
+
+		// Search text
+		$search = isset( $_GET['s'] )
+			? sanitize_text_field( $_GET['s'] )
+			: '';
 
 		// Query for replies
 		$meta_data_query  = new WP_Meta_Data_Query( array(
-			'number'      => $per_page,
-			'offset'      => $offset,
-			'orderby'     => $orderby,
-			'order'       => ucwords( $order ),
-			'search'      => $search
+			'number'  => $per_page,
+			'offset'  => $offset,
+			'orderby' => $orderby,
+			'order'   => ucwords( $order ),
+			'search'  => $search
 		), $this->object_type );
 
 		// Get the total number of replies, for pagination
@@ -258,7 +300,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	/**
 	 * Message to be displayed when there are no items
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function no_items() {
 		esc_html_e( 'No meta data found.', 'wp-meta-manager' );
@@ -270,7 +312,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * This custom method is necessary because the one in `WP_List_Table` comes
 	 * with a nonce and check that we do not need.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function display() {
 
@@ -284,7 +326,7 @@ class WP_Meta_List_table extends WP_List_Table {
 				</tr>
 			</thead>
 
-			<tbody id="the-list" data-wp-lists='list:<?php echo $this->_args['singular']; ?>'>
+			<tbody id="the-list" data-wp-lists='list:<?php echo esc_attr( $this->_args['singular'] ); ?>'>
 				<?php $this->display_rows_or_placeholder(); ?>
 			</tbody>
 
@@ -307,7 +349,7 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * This custom method is necessary because the one in `WP_List_Table` comes
 	 * with a nonce and check that we do not need.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param string $which
 	 */
@@ -329,31 +371,42 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * Show the search field
 	 *
 	 * @access public
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param string $text Label for the search box
 	 * @param string $input_id ID of the search box
 	 *
 	 * @return svoid
 	 */
-	public function search_box( $text, $input_id ) {
+	public function search_box( $text = '', $input_id = '' ) {
 
+		// Bail if no items to search
 		if ( empty( $_REQUEST['s'] ) && ! $this->has_items() ) {
 			return;
 		}
 
-		$input_id = $input_id . '-search-input';
+		// Combine the input ID
+		$input_id = sanitize_key( $input_id ) . '-search-input';
 
-		if ( ! empty( $_REQUEST['orderby'] ) )
+		// Hidden orderby field
+		if ( ! empty( $_REQUEST['orderby'] ) ) {
 			echo '<input type="hidden" name="orderby" value="' . esc_attr( $_REQUEST['orderby'] ) . '" />';
-		if ( ! empty( $_REQUEST['order'] ) )
+		}
+
+		// Hidden order field
+		if ( ! empty( $_REQUEST['order'] ) ) {
 			echo '<input type="hidden" name="order" value="' . esc_attr( $_REQUEST['order'] ) . '" />';
+		}
+
 		?>
+
 		<p class="search-box">
-			<label class="screen-reader-text" for="<?php echo $input_id ?>"><?php echo $text; ?>:</label>
-			<input type="search" id="<?php echo $input_id ?>" name="s" value="<?php _admin_search_query(); ?>" />
+			<input type="hidden" name="tab" value="<?php echo esc_attr( $this->object_type ); ?>" />
+			<label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $text ); ?>:</label>
+			<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>" />
 			<?php submit_button( $text, 'button', false, false, array( 'ID' => 'search-submit' ) ); ?>
 		</p>
+
 		<?php
 	}
 
@@ -361,22 +414,22 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * Edit form HTML
 	 *
 	 * @access public
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @return svoid
 	 */
 	public function edit_form( $item ) {
 ?>
-		<div id="wp-meta-edit-<?php echo $item->id; ?>" style="display:none;">
-			<h4><?php printf( __( 'Edit Meta ID %d', 'wp-meta-manager' ), $item->id ); ?></h4>
+		<div id="wp-meta-edit-<?php echo esc_attr( $item->id ); ?>" style="display:none;">
+			<h4><?php printf( esc_html__( 'Edit Meta ID %d', 'wp-meta-manager' ), esc_html( $item->id ) ); ?></h4>
 			<form method="post" class="wp-meta-form wp-meta-edit-form">
 				<p>
 					<label for="wp-meta-edit-meta-key"><?php _e( 'Meta Key', 'wp-meta-manager' ); ?></label>
-					<input type="text" name="meta_key" id="wp-meta-edit-meta-key" value="<?php echo esc_attr( $item->meta_key ); ?>"/>	
+					<input type="text" name="meta_key" id="wp-meta-edit-meta-key" value="<?php echo esc_attr( $item->meta_key ); ?>"/>
 				</p>
 				<p>
 					<label for="wp-meta-edit-object-id"><?php _e( 'Object ID', 'wp-meta-manager' ); ?></label>
-					<input type="text" name="object_id" id="wp-meta-edit-object-id" value="<?php echo esc_attr( $item->object_id ); ?>"/>	
+					<input type="text" name="object_id" id="wp-meta-edit-object-id" value="<?php echo esc_attr( $item->object_id ); ?>"/>
 				</p>
 				<p>
 					<label for="wp-meta-edit-meta-value"><?php _e( 'Meta Value', 'wp-meta-manager' ); ?></label><br/>
@@ -384,16 +437,16 @@ class WP_Meta_List_table extends WP_List_Table {
 				</p>
 				<p>
 					<?php wp_nonce_field( 'wp-edit-meta-nonce', 'wp-edit-meta-nonce' ); ?>
-					<input type="hidden" name="meta_id" value="<?php echo esc_attr( $item->id ); ?>"/>	
-					<input type="hidden" name="object_type" value="<?php echo esc_attr( $item->object_type ); ?>"/>	
-					<input type="submit" id="wp-meta-edit-meta-submit" class="button-primary" value="<?php _e( 'Update', 'wp-meta-manager' ); ?>"/>	
+					<input type="hidden" name="meta_id" value="<?php echo esc_attr( $item->id ); ?>"/>
+					<input type="hidden" name="object_type" value="<?php echo esc_attr( $item->object_type ); ?>"/>
+					<input type="submit" id="wp-meta-edit-meta-submit" class="button-primary" value="<?php _e( 'Update', 'wp-meta-manager' ); ?>"/>
 					<span class="spinner"></span>
 				</p>
 			</form>
 		</div>
-<?php
-	} 
 
+<?php
+	}
 }
 
 endif;
