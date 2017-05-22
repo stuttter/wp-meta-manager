@@ -126,8 +126,13 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function column_meta_key( $item = '' ) {
 
-		// Edit currently uses a thickbox
-		$edit_url   = '#TB_inline?width=600&height=600&inlineId=wp-meta-edit-' . $item->id;
+		// Edit
+		$edit_url = add_query_arg( array(
+			'meta_id'     => $item->id,
+			'object_type' => $item->object_type,
+			'view'        => 'edit',
+			'nonce'       => wp_create_nonce( 'wp-edit-meta' )
+		) );
 
 		// Delete
 		$delete_url = add_query_arg( array(
@@ -138,7 +143,7 @@ class WP_Meta_List_table extends WP_List_Table {
 
 		// Actions
 		$actions = array(
-			'edit'   => '<a href="' . esc_url( $edit_url   ) . '" class="wp-meta-action-link thickbox">' . esc_html__( 'Edit', 'wp-meta-manager' ) . '</a>',
+			'edit'   => '<a href="' . esc_url( $edit_url   ) . '" class="wp-meta-action-link wp-meta-edit edit"     data-meta-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '" data-nonce="' . wp_create_nonce( 'wp-meta-delete' ) . '">' . esc_html__( 'Edit',   'wp-meta-manager' ) . '</a>',
 			'delete' => '<a href="' . esc_url( $delete_url ) . '" class="wp-meta-action-link wp-meta-delete delete" data-meta-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '" data-nonce="' . wp_create_nonce( 'wp-meta-delete' ) . '">' . esc_html__( 'Delete', 'wp-meta-manager' ) . '</a>'
 		);
 

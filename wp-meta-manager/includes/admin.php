@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  */
 function wp_meta_manager_admin_menu() {
 
-	$hook = add_management_page( __( 'Meta Manager', 'wp-meta-manager' ), __( 'Meta Manager', 'wp-meta-manager' ), 'manage_options', 'wp-meta-manager', 'wp_meta_manager_admin' );
+	$hook = add_management_page( __( 'Meta Manager', 'wp-meta-manager' ), __( 'Meta Manager', 'wp-meta-manager' ), 'manage_meta', 'wp-meta-manager', 'wp_meta_manager_admin' );
 
 	add_action( 'load-' . $hook, 'wp_meta_manager_admin_help'    );
 	add_action( 'load-' . $hook, 'wp_meta_manager_admin_scripts' );
@@ -45,39 +45,46 @@ function wp_meta_manager_admin_scripts() {
 function wp_meta_manager_admin() {
 
 	// Maybe return add-new page
-	if ( ! empty( $_GET['view'] ) && ( 'add-new' === $_GET['view'] ) ) {
-		wp_meta_manager_add_new();
+	if ( ! empty( $_GET['view'] ) && ( 'edit' === $_GET['view'] ) ) {
+		wp_meta_manager_edit();
 		return;
 	}
 
-	// Enqueue the thickbox styling
-	add_thickbox();
+	// Get tab
+	$tab = isset( $_GET['tab'] )
+		? sanitize_key( $_GET['tab'] )
+		: 'post';
 
-	$tab      = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'post';
-	$tab      = wp_get_meta_type( $tab ) ? $tab : 'post';
-	$base_url = admin_url( 'tools.php?page=wp-meta-manager' );
+	// Look for registered meta type
+	$object_type = wp_get_meta_type( $tab );
 
-?>
+	// Fallback to 'post' meta type if $_GET is weird
+	if ( null === $object_type ) {
+		$tab         = 'post';
+		$object_type = wp_get_meta_type( $tab );
+	}
+
+	// "Add New" URL
+	$add_new_url = add_query_arg( array(
+		'view'        => 'edit',
+		'object_type' => $tab
+	), menu_page_url( 'wp-meta-manager', false ) );
+
+	// Prepare the List Table UI
+	$list_table              = new WP_Meta_List_table();
+	$list_table->object_type = $tab;
+	$list_table->table_name  = $object_type->table_name;
+	$list_table->prepare_items(); ?>
+
 	<div class="wrap">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
-		<a href="<?php echo esc_url( add_query_arg( array( 'view' => 'add-new', 'object_type' => $tab ), $base_url ) ); ?>" class="page-title-action"><?php printf( __( 'Add New %s Meta', 'wp-meta-manager' ), ucwords( $tab ) ); ?></a>
+		<a href="<?php echo esc_url( $add_new_url ); ?>" class="page-title-action"><?php printf( esc_html__( 'Add New %s Meta', 'wp-meta-manager' ), ucwords( $tab ) ); ?></a>
 		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( $tab ); ?></h2>
-<?php
-		$list_table = new WP_Meta_List_table();
-		$list_table->object_type = $tab;
-		$list_table->table_name  = wp_get_meta_type( $tab )->table_name;
-		$list_table->prepare_items();
-?>
 		<form id="wp-meta-data" method="get">
 			<input type="hidden" name="page" value="wp-meta-manager" />
-			<?php $list_table->search_box( __( 'Search', 'wp-meta-data' ), 'wp-meta-data' ); ?>
+			<?php $list_table->search_box( esc_attr__( 'Search', 'wp-meta-data' ), 'wp-meta-data' ); ?>
 			<?php $list_table->display(); ?>
 		</form>
-		<?php if ( $list_table->items ) : ?>
-			<?php foreach( $list_table->items as $item ) : ?>
-				<?php echo $list_table->edit_form( $item ); ?>
-			<?php endforeach; ?>
-		<?php endif; ?>
 	</div>
 
 <?php
@@ -90,15 +97,17 @@ function wp_meta_manager_admin() {
  */
 function wp_meta_manager_admin_notices() {
 
+	// Bail if no message
 	if ( empty( $_GET['wp-meta-message'] ) ) {
 		return;
 	}
 
-	if ( ! current_user_can( 'manage_options' ) ) {
+	// Bail if user cannot manage meta
+	if ( ! current_user_can( 'manage_meta' ) ) {
 		return;
 	}
 
-	switch( $_GET['wp-meta-message'] ) {
+	switch ( $_GET['wp-meta-message'] ) {
 		case 'success' :
 			echo '<div class="updated"><p>' . __( 'Meta data added.', 'wp-meta-manager' ) . '</p></div>';
 			break;
@@ -139,9 +148,10 @@ function wp_meta_admin_tabs( $active_tab = '' ) {
 function wp_meta_get_admin_tab_html( $active_tab = '' ) {
 
 	// Declare local variables
-	$tabs_html    = '';
+	$tabs_html    = array();
 	$idle_class   = 'nav-tab';
 	$active_class = 'nav-tab nav-tab-active';
+	$base_url     = menu_page_url( 'wp-meta-manager', false );
 
 	// Setup core admin tabs
 	$tabs = wp_meta_get_admin_tabs();
@@ -150,14 +160,14 @@ function wp_meta_get_admin_tab_html( $active_tab = '' ) {
 	foreach ( $tabs as $tab ) {
 
 		// Setup tab HTML
-		$is_current = (bool) ( $tab == $active_tab );
-		$tab_class  = $is_current ? $active_class : $idle_class;
-		$tab_url    = get_admin_url( '', add_query_arg( array( 'tab' => $tab ), 'tools.php?page=wp-meta-manager' ) );
-		$tabs_html .= '<a href="' . esc_url( $tab_url ) . '" class="' . esc_attr( $tab_class ) . '">' . esc_html( ucfirst( $tab ) ) . '</a>';
+		$is_current  = (bool) ( $tab === $active_tab );
+		$tab_class   = $is_current ? $active_class : $idle_class;
+		$tab_url     = add_query_arg( array( 'tab' => $tab, ), $base_url );
+		$tabs_html[] = '<a href="' . esc_url( $tab_url ) . '" class="' . esc_attr( $tab_class ) . '">' . esc_html( ucfirst( $tab ) ) . '</a>';
 	}
 
-	// Output the tabs
-	return $tabs_html;
+	// Return the tab ID
+	return implode( '', $tabs_html );
 }
 
 /**
@@ -172,88 +182,6 @@ function wp_meta_get_admin_tabs() {
 	$tabs  = wp_list_pluck( $types, 'object_type' );
 
 	return apply_filters( 'wp_meta_admin_tabs', $tabs );
-}
-
-/**
- * Process meta data edit request
- *
- * @since 1.0.0
- *
- * @return void
- */
-function wp_meta_ajax_edit_response() {
-
-	if ( empty( $_POST['data'] ) ) {
-		die( '-1' );
-	}
-
-	$data = array();
-
-	wp_parse_str( $_POST['data'], $data );
-
-	if ( empty( $data['wp-edit-meta-nonce'] ) ) {
-		die( '-2' );
-	}
-
-	if ( ! wp_verify_nonce( $data['wp-edit-meta-nonce'], 'wp-edit-meta-nonce' ) ) {
-		die( '-3' );
-	}
-
-	if ( ! current_user_can( 'manage_options' ) ) {
-		die( '-4' );
-	}
-
-	$meta_id     = absint( $data['meta_id'] );
-	$object_type = sanitize_key( $data['object_type'] );
-	$meta_key    = wp_unslash( $data['meta_key'] );
-	$meta_value  = wp_unslash( $data['meta_value'] );
-	$meta_value  = sanitize_meta( $meta_key, $meta_value, $object_type );
-	$object_id   = absint( $data['object_id'] );
-	$meta        = get_meta( $object_type, $meta_id );
-
-	$ret = $meta->update( array(
-		'meta_key'   => $meta_key,
-		'meta_value' => $meta_value,
-		'object_id'  => $object_id,
-	) );
-
-	! empty( $ret )
-		? wp_send_json_success( array( 'success' => true, 'data' => $meta ) )
-		: wp_send_json_error( array( 'success' => false, 'data' => $meta ) );
-}
-
-/**
- * Process meta data delete request
- *
- * @since 1.0.0
- *
- * @return void
- */
-function wp_meta_ajax_delete_response() {
-
-	if ( empty( $_POST['nonce'] ) ) {
-		die( '-1' );
-	}
-
-	if ( empty( $_POST['meta_id'] ) || empty( $_POST['object_type'] ) ) {
-		die( '-2' );
-	}
-
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'wp-meta-delete' ) ) {
-		die( '-3' );
-	}
-
-	if ( ! current_user_can( 'manage_options' ) ) {
-		die( '-4' );
-	}
-
-	$meta_id     = absint( $_POST['meta_id'] );
-	$object_type = sanitize_key( $_POST['object_type'] );
-	$meta        = get_meta( $object_type, $meta_id );
-
-	$meta->delete()
-		? wp_send_json_success( array( 'success' => true ) )
-		: wp_send_json_error( array( 'success' => false ) );
 }
 
 /**
@@ -277,7 +205,7 @@ function wp_meta_process_add_meta() {
 		return;
 	}
 
-	if ( ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'manage_meta' ) ) {
 		return;
 	}
 
