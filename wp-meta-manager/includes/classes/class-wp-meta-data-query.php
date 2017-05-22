@@ -178,7 +178,11 @@ class WP_Meta_Data_Query {
 			'update_meta_cache' => true,
 		);
 
-		$this->query( $query );
+		// Only query if a query is passed. Allows object creation without
+		// forcing a query.
+		if ( ! empty( $query ) ) {
+			$this->query( $query );
+		}
 	}
 
 	/**

@@ -275,7 +275,7 @@ class WP_Meta_List_table extends WP_List_Table {
 			: '';
 
 		// Query for replies
-		$meta_data_query  = new WP_Meta_Data_Query( array(
+		$meta_data_query = new WP_Meta_Data_Query( array(
 			'number'  => $per_page,
 			'offset'  => $offset,
 			'orderby' => $orderby,
