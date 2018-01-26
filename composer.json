@@ -1,0 +1,17 @@
+{
+  "name": "stuttter/wp-meta-manager",
+  "description": "Manage meta data for WordPress posts, users, comments, terms, and more",
+  "homepage": "https://github.com/stuttter/wp-meta-manager",
+  "type": "wordpress-plugin",
+  "require": {
+    "php": ">=5.2",
+    "composer/installers": "^1.0"
+  },
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "John James Jacoby",
+      "email": "johnjamesjacoby@me.com"
+    }
+  ]
+}
