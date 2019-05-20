@@ -57,7 +57,7 @@ function wp_meta_manager_edit() {
 							<label for="wp-meta-id"><?php esc_html_e( 'Meta ID', 'wp-meta-manager' ); ?></label>
 						</th>
 						<td>
-							<input type="number" disabled="disabled" name="meta_id" id="wp-meta-id" class="code" value="<?php echo absint( $meta_id ); ?>" />
+							<input type="number" inputmode="numeric" disabled="disabled" name="meta_id" id="wp-meta-id" class="code" value="<?php echo absint( $meta_id ); ?>" />
 							<p class="description"><?php esc_html_e( 'Meta ID cannot be changed.', 'wp-meta-manager' ); ?></p>
 						</td>
 					</tr>
@@ -69,8 +69,7 @@ function wp_meta_manager_edit() {
 						<label for="wp-meta-object-id"><?php printf( esc_html__( '%s ID', 'wp-meta-manager' ), ucwords( $object_type ) ); ?></label>
 					</th>
 					<td>
-						<input type="number" min="1" max="<?php echo PHP_INT_MAX; ?>" name="object_id" id="wp-meta-object-id" class="code" value="<?php echo esc_attr( $object_id ); ?>" />
-						<p class="description"><?php esc_html_e( 'Meta ID cannot be changed.', 'wp-meta-manager' ); ?></p>
+						<input type="number" inputmode="numeric" min="1" max="<?php echo PHP_INT_MAX; ?>" name="object_id" id="wp-meta-object-id" class="code" value="<?php echo esc_attr( $object_id ); ?>" />
 					</td>
 				</tr>
 				<tr>
