@@ -109,11 +109,11 @@ function wp_meta_manager_admin_notices() {
 
 	switch ( $_GET['wp-meta-message'] ) {
 		case 'success' :
-			echo '<div class="updated"><p>' . __( 'Meta data added.', 'wp-meta-manager' ) . '</p></div>';
+			echo '<div class="updated"><p>' . esc_html__( 'Meta data added.', 'wp-meta-manager' ) . '</p></div>';
 			break;
 
 		case 'failure' :
-			echo '<div class="error"><p>' . __( 'Meta data could not be added.', 'wp-meta-manager' ) . '</p></div>';
+			echo '<div class="error"><p>' . esc_html__( 'Meta data could not be added.', 'wp-meta-manager' ) . '</p></div>';
 			break;
 	}
 }
@@ -157,13 +157,13 @@ function wp_meta_get_admin_tab_html( $active_tab = '' ) {
 	$tabs = wp_meta_get_admin_tabs();
 
 	// Loop through tabs and build navigation
-	foreach ( $tabs as $tab ) {
+	foreach ( $tabs as $tab => $tab_data ) {
 
 		// Setup tab HTML
 		$is_current  = (bool) ( $tab === $active_tab );
 		$tab_class   = $is_current ? $active_class : $idle_class;
 		$tab_url     = add_query_arg( array( 'tab' => $tab, ), $base_url );
-		$tabs_html[] = '<a href="' . esc_url( $tab_url ) . '" class="' . esc_attr( $tab_class ) . '">' . esc_html( ucfirst( $tab ) ) . '</a>';
+		$tabs_html[] = '<a href="' . esc_url( $tab_url ) . '" class="' . esc_attr( $tab_class ) . '">' . esc_html( $tab_data->labels['singular'] ) . '</a>';
 	}
 
 	// Return the tab ID
@@ -178,10 +178,9 @@ function wp_meta_get_admin_tab_html( $active_tab = '' ) {
  * @return array
  */
 function wp_meta_get_admin_tabs() {
-	$types = wp_get_meta_types( array(), 'objects' );
-	$tabs  = wp_list_pluck( $types, 'object_type' );
+	$tabs = wp_get_meta_types( array(), 'objects' );
 
-	return apply_filters( 'wp_meta_admin_tabs', $tabs );
+	return apply_filters( 'wp_meta_get_admin_tabs', $tabs );
 }
 
 /**
@@ -193,26 +192,32 @@ function wp_meta_get_admin_tabs() {
  */
 function wp_meta_process_add_meta() {
 
-	if ( empty( $_POST['action'] ) || 'add_meta' !== $_POST['action'] ) {
+	// Bail if not adding meta
+	if ( empty( $_POST['action'] ) || 'add-meta' !== $_POST['action'] ) {
 		return;
 	}
 
-	if ( empty( $_POST['wp-add-meta-nonce'] ) ) {
+	// Bail if no nonce
+	if ( empty( $_POST['wp-meta-nonce'] ) ) {
 		return;
 	}
 
+	// Bail if no object type
 	if ( empty( $_POST['object_type'] ) ) {
 		return;
 	}
 
+	// Bail if user cannot manage meta
 	if ( ! current_user_can( 'manage_meta' ) ) {
 		return;
 	}
 
-	if ( ! wp_verify_nonce( $_POST['wp-add-meta-nonce'], 'wp-add-meta-nonce' ) ) {
+	// Bail if nonce validation fails
+	if ( ! wp_verify_nonce( $_POST['wp-meta-nonce'], 'wp-addmeta-nonce' ) ) {
 		wp_die( __( 'Nonce verification failed', 'wp-meta-manager' ), __( 'Error', 'wp-meta-manager' ), array( 'response' => 403 ) );
 	}
 
+	// Sanitize columns
 	$object_type = sanitize_key( $_POST['object_type'] );
 	$object_id   = absint( $_POST['object_id'] );
 	$meta_key    = wp_unslash( $_POST['meta_key'] );
@@ -224,9 +229,19 @@ function wp_meta_process_add_meta() {
 		'meta_value' => $meta_value
 	);
 
+	// Attempt to add the meta
 	$message = wp_add_meta( $object_type, $args )
 		? 'success'
 		: 'failure';
 
-	wp_redirect( admin_url( 'tools.php?page=wp-meta-manager&tab=' . $object_type . '&wp-meta-message=' . $message ) ); exit;
+	// Get the URL to redirect to
+	$url = add_query_arg( array(
+		'page'            => 'wp-meta-manager',
+		'tab'             => $object_type,
+		'wp-meta-message' => $message
+	), admin_url( 'tools.php' ) );
+
+	// Redirect
+	wp_redirect( $url );
+	exit;
 }
