@@ -58,7 +58,7 @@ function wp_meta_manager_edit() {
 						</th>
 						<td>
 							<input type="number" inputmode="numeric" disabled="disabled" name="meta_id" id="wp-meta-id" class="code" value="<?php echo absint( $meta_id ); ?>" />
-							<p class="description"><?php esc_html_e( 'Meta ID cannot be changed.', 'wp-meta-manager' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Cannot be changed. Used as unique cache key.', 'wp-meta-manager' ); ?></p>
 						</td>
 					</tr>
 
