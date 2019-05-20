@@ -147,8 +147,14 @@ class WP_Meta_List_table extends WP_List_Table {
 			'delete' => '<a href="' . esc_url( $delete_url ) . '" class="wp-meta-action-link wp-meta-delete delete" data-meta-id="' . esc_attr( $item->id ) . '" data-object-type="' . esc_attr( $item->object_type ) . '" data-nonce="' . wp_create_nonce( 'wp-meta-delete' ) . '">' . esc_html__( 'Delete', 'wp-meta-manager' ) . '</a>'
 		);
 
-		return $item->meta_key . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
+		// Filter by meta_key
+		$url = add_query_arg( array(
+			'tab'      => $item->object_type,
+			'meta_key' => $item->meta_key
+		), menu_page_url( 'wp-meta-manager', false ) );
 
+		// Return link and rows
+		return '<a href="' . esc_url( $url ) . '">' . esc_html( $item->meta_key ) . '</a>' . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
 	}
 
 	/**
@@ -158,20 +164,14 @@ class WP_Meta_List_table extends WP_List_Table {
 	 */
 	public function column_object_id( $item = '' ) {
 
-		// Get the meta type
-		$meta_type = wp_get_meta_type( $item->object_type );
+		// Filter by object ID
+		$url = add_query_arg( array(
+			'tab'      => $item->object_type,
+			'object_id' => $item->object_id
+		), menu_page_url( 'wp-meta-manager', false ) );
 
-		// Use the meta callback (if one exists)
-		if ( ! empty( $meta_type->edit_callback ) && is_callable( $meta_type->edit_callback ) ) {
-			$url   = call_user_func( $meta_type->edit_callback, $item->object_id );
-			$value = '<a href="' . esc_url( $url ) . '">' . esc_html( $item->object_id ) . '</a>';
-
-		// Use the raw object ID
-		} else {
-			$value = $item->object_id;
-		}
-
-		return $value;
+		// Return the link
+		return '<a href="' . esc_url( $url ) . '">' . esc_html( $item->object_id ) . '</a>';
 	}
 
 	/**
@@ -279,14 +279,27 @@ class WP_Meta_List_table extends WP_List_Table {
 			? sanitize_text_field( $_GET['s'] )
 			: '';
 
-		// Query for replies
-		$meta_data_query = new WP_Meta_Data_Query( array(
+		// Default args
+		$args = array(
 			'number'  => $per_page,
 			'offset'  => $offset,
 			'orderby' => $orderby,
 			'order'   => ucwords( $order ),
 			'search'  => $search
-		), $this->object_type );
+		);
+
+		// Filter by object_id
+		if ( ! empty( $_REQUEST['object_id'] ) ) {
+			$args['object_id'] = absint( $_REQUEST['object_id'] );
+		}
+
+		// Filter by meta_key
+		if ( ! empty( $_REQUEST['meta_key'] ) ) {
+			$args['key'] = sanitize_text_field( $_REQUEST['meta_key'] );
+		}
+
+		// Query for replies
+		$meta_data_query = new WP_Meta_Data_Query( $args, $this->object_type );
 
 		// Get the total number of replies, for pagination
 		$total_items = $this->get_total_items();
