@@ -20,7 +20,7 @@ function wp_meta_add_easy_digital_downloads_meta() {
 	}
 
 	// Register customer meta
-	wp_register_meta_type( 'customer', array( 
+	wp_register_meta_type( 'customer', array(
 		'table_name' => 'edd_customermeta'
 	) );
 
@@ -39,7 +39,30 @@ function wp_meta_add_affiliatewp_meta() {
 	}
 
 	// Register affiliate meta
-	wp_register_meta_type( 'affiliate', array( 'table_name' => 'affiliate_wp_affiliatemeta' ) );
-
+	wp_register_meta_type( 'affiliate', array(
+		'table_name' => 'affiliate_wp_affiliatemeta'
+	) );
 }
 add_action( 'wp_register_meta_types', 'wp_meta_add_affiliatewp_meta' );
+
+/**
+ * Register Sugar Calendar's affiliate meta.
+ *
+ * @since 2.0.0
+ */
+function wp_meta_add_sugar_calendar_meta() {
+
+	// Bail if no event meta function
+	if ( ! function_exists( 'add_event_meta' ) ) {
+		return;
+	}
+
+	// Register event meta
+	wp_register_meta_type( 'event', array(
+		'table_name' => 'sc_eventmeta',
+		'columns'    => array(
+			'object_id' => 'sc_event_id'
+		)
+	) );
+}
+add_action( 'wp_register_meta_types', 'wp_meta_add_sugar_calendar_meta' );
