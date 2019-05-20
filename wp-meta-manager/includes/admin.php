@@ -78,7 +78,7 @@ function wp_meta_manager_admin() {
 
 	<div class="wrap">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Meta Manager', 'wp-meta-manager' ); ?></h1>
-		<a href="<?php echo esc_url( $add_new_url ); ?>" class="page-title-action"><?php printf( esc_html__( 'Add New %s Meta', 'wp-meta-manager' ), ucwords( $tab ) ); ?></a>
+		<a href="<?php echo esc_url( $add_new_url ); ?>" class="page-title-action"><?php printf( esc_html__( 'Add New %s Meta', 'wp-meta-manager' ), $object_type->labels['singular'] ); ?></a>
 		<h2 class="nav-tab-wrapper"><?php wp_meta_admin_tabs( $tab ); ?></h2>
 		<form id="wp-meta-data" method="get">
 			<input type="hidden" name="page" value="wp-meta-manager" />
