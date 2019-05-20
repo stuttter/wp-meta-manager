@@ -32,6 +32,18 @@ class WP_Meta_Type {
 	public $columns = array();
 
 	/**
+	 * Array of labels.
+	 *
+	 * These are usually automatically built based on the object_type, but you
+	 * may want to define these to provide additional context.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @var array
+	 */
+	public $labels = array();
+
+	/**
 	 * Callback function to retrieve the edit URL for an object.
 	 *
 	 * Object ID (e.g. post ID) is passed as a parameter to the callback function.
@@ -65,6 +77,7 @@ class WP_Meta_Type {
 			'global'        => false,
 			'table_name'    => $object_type . 'meta',
 			'columns'       => array(),
+			'labels'        => array(),
 			'edit_callback' => ''
 		) );
 
@@ -76,6 +89,16 @@ class WP_Meta_Type {
 			'meta_value' => 'meta_value'
 		) );
 
+		// Default labels
+		$default_singular = implode( ' ', array_map( 'ucfirst', explode( '-', $object_type ) ) );
+		$default_plural   = $default_singular . 's';
+
+		// Parse labels argument
+		$r['labels'] = wp_parse_args( $r['labels'], array(
+			'singular' => $default_singular,
+			'plural'   => $default_plural
+		) );
+
 		// Get prefix for global/site meta
 		$prefix = ( true === $r['global'] )
 			? $wpdb->base_prefix
@@ -85,6 +108,7 @@ class WP_Meta_Type {
 		$this->table_name    = $prefix . $r['table_name'];
 		$this->object_type   = $object_type;
 		$this->columns       = array_filter( $r['columns'] );
+		$this->labels        = array_filter( $r['labels'] );
 		$this->edit_callback = $r['edit_callback'];
 	}
 }
