@@ -1,8 +1,6 @@
 <?php
-
 /**
- * Meta Manager Admin
- *
+ * Meta Manager Functions
  */
 
 // Exit if accessed directly
@@ -199,13 +197,17 @@ function get_meta( $object_type = '', $meta = 0 ) {
 function wp_add_meta( $object_type = '', $args = array() ) {
 	global $wpdb;
 
+	// Get the meta type
 	$type_object = wp_get_meta_type( $object_type );
 
-	$data = array();
-	$data[ $type_object->columns['meta_key'] ]   = $args['meta_key'];
-	$data[ $type_object->columns['meta_value'] ] = $args['meta_value'];
-	$data[ $type_object->columns['object_id'] ]  = $args['object_id'];
+	// Map columns
+	$data = array(
+		$type_object->columns['meta_key']   => $args['meta_key'],
+		$type_object->columns['meta_value'] => $args['meta_value'],
+		$type_object->columns['object_id']  => $args['object_id']
+	);
 
+	// Insert into database
 	$ret = $wpdb->insert( $type_object->table_name, $data, array( '%s', '%s', '%d' ) );
 
 	/**
