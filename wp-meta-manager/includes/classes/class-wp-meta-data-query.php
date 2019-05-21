@@ -174,7 +174,7 @@ class WP_Meta_Data_Query {
 			'search'            => '',
 			'search_columns'    => array(),
 			'count'             => false,
-			'no_found_rows'     => true,
+			'no_found_rows'     => false,
 			'update_meta_cache' => true,
 		);
 
@@ -404,13 +404,13 @@ class WP_Meta_Data_Query {
 		// Parse meta IDs for an IN clause.
 		$meta_id = absint( $this->query_vars['meta_id'] );
 		if ( ! empty( $meta_id ) ) {
-			$this->sql_clauses['where']['meta_id'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_id']} = %d", $meta_id );
+			$this->sql_clauses['where']['meta_id'] = $this->get_db()->prepare( "{$this->meta_object->columns['meta_id']} = %d", $meta_id );
 		}
 
 		// Parse meta IDs for an IN clause.
 		if ( ! empty( $this->query_vars['meta_id__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
-				$this->sql_clauses['where']['meta_id'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_id']} = %d", reset( $this->query_vars['in'] ) );
+				$this->sql_clauses['where']['meta_id'] = $this->get_db()->prepare( "{$this->meta_object->columns['meta_id']} = %d", reset( $this->query_vars['in'] ) );
 			} else {
 				$this->sql_clauses['where']['meta_id__in'] = "{$this->meta_object->columns['meta_id']} IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['meta_id__in'] ) ) . ' )';
 			}
@@ -426,13 +426,13 @@ class WP_Meta_Data_Query {
 		// Parse object IDs for an IN clause.
 		$object_id = absint( $this->query_vars['object_id'] );
 		if ( ! empty( $object_id ) ) {
-			$this->sql_clauses['where']['object_id'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['object_id']} = %d", $object_id );
+			$this->sql_clauses['where']['object_id'] = $this->get_db()->prepare( "{$this->meta_object->columns['object_id']} = %d", $object_id );
 		}
 
 		// Parse object IDs for an IN clause.
 		if ( ! empty( $this->query_vars['object_id__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
-				$this->sql_clauses['where']['object_id'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['object_id']} = %d", reset( $this->query_vars['in'] ) );
+				$this->sql_clauses['where']['object_id'] = $this->get_db()->prepare( "{$this->meta_object->columns['object_id']} = %d", reset( $this->query_vars['in'] ) );
 			} else {
 				$this->sql_clauses['where']['object_id__in'] = "{$this->meta_object->columns['object_id']} IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['object_id__in'] ) ) . ' )';
 			}
@@ -448,13 +448,13 @@ class WP_Meta_Data_Query {
 		// Parse object IDs for an IN clause.
 		$key = $this->query_vars['key'];
 		if ( ! empty( $key ) ) {
-			$this->sql_clauses['where']['key'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_key']} = %s", $key );
+			$this->sql_clauses['where']['key'] = $this->get_db()->prepare( "{$this->meta_object->columns['meta_key']} = %s", $key );
 		}
 
 		// Parse object IDs for an IN clause.
 		if ( ! empty( $this->query_vars['key__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
-				$this->sql_clauses['where']['key'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_key']} = %s", reset( $this->query_vars['in'] ) );
+				$this->sql_clauses['where']['key'] = $this->get_db()->prepare( "{$this->meta_object->columns['meta_key']} = %s", reset( $this->query_vars['in'] ) );
 			} else {
 				$this->sql_clauses['where']['key__in'] = "{$this->meta_object->columns['meta_key']} IN ( " . implode( ',', $this->query_vars['key__in'] ) . ' )';
 			}
@@ -470,13 +470,13 @@ class WP_Meta_Data_Query {
 		// Parse object IDs for an IN clause.
 		$value = $this->query_vars['value'];
 		if ( ! empty( $value ) ) {
-			$this->sql_clauses['where']['value'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_value']} = %d", $value );
+			$this->sql_clauses['where']['value'] = $this->get_db()->prepare( "{$this->meta_object->columns['meta_value']} = %d", $value );
 		}
 
 		// Parse object IDs for an IN clause.
 		if ( ! empty( $this->query_vars['value__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
-				$this->sql_clauses['where']['value'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_value']} = %s", reset( $this->query_vars['in'] ) );
+				$this->sql_clauses['where']['value'] = $this->get_db()->prepare( "{$this->meta_object->columns['meta_value']} = %s", reset( $this->query_vars['in'] ) );
 			} else {
 				$this->sql_clauses['where']['value__in'] = "{$this->meta_object->columns['meta_value']} IN ( " . implode( ',', $this->query_vars['value__in'] ) . ' )';
 			}
@@ -570,13 +570,13 @@ class WP_Meta_Data_Query {
 
 		// Do the COUNT query
 		if ( ! empty( $this->query_vars['count'] ) ) {
-			return absint( $GLOBALS['wpdb']->get_var( $this->request ) );
+			return absint( $this->get_db()->get_var( $this->request ) );
 		}
 
 		// Do the column query
-		$meta_ids = $GLOBALS['wpdb']->get_col( $this->request );
+		$meta_ids = $this->get_db()->get_col( $this->request );
 
-		//
+		// Return all IDs as absolute ints
 		return array_map( 'absint', $meta_ids );
 	}
 
@@ -591,7 +591,25 @@ class WP_Meta_Data_Query {
 	 */
 	private function set_found_metas( $meta_ids = array() ) {
 
-		if ( ! empty( $this->query_vars['number'] ) && ! empty( $this->query_vars['no_found_rows'] ) ) {
+		// Items were not found
+		if ( empty( $meta_ids ) ) {
+			return;
+		}
+
+		// Default to number of item IDs
+		$this->found_metas = count( (array) $meta_ids );
+
+		// Count query
+		if ( ! empty( $this->query_vars['count'] ) ) {
+
+			// Not grouped
+			if ( is_numeric( $meta_ids ) && empty( $this->query_vars['groupby'] ) ) {
+				$this->found_metas = intval( $meta_ids );
+			}
+
+		// Not a count query
+		} elseif ( is_array( $meta_ids ) && ( ! empty( $this->query_vars['number'] ) && empty( $this->query_vars['no_found_rows'] ) ) ) {
+
 			/**
 			 * Filters the query used to retrieve found meta count.
 			 *
@@ -602,9 +620,10 @@ class WP_Meta_Data_Query {
 			 */
 			$found_metas_query = apply_filters( 'found_metas_query', 'SELECT FOUND_ROWS()', $this );
 
-			$this->found_metas = (int) $GLOBALS['wpdb']->get_var( $found_metas_query );
-		} elseif ( ! empty( $meta_ids ) ) {
-			$this->found_metas = count( $meta_ids );
+			// Maybe query for found metas
+			if ( ! empty( $found_metas_query ) ) {
+				$this->found_metas = (int) $this->get_db()->get_var( $found_metas_query );
+			}
 		}
 	}
 
@@ -621,14 +640,14 @@ class WP_Meta_Data_Query {
 	protected function get_search_sql( $string, $columns ) {
 
 		if ( false !== strpos( $string, '*' ) ) {
-			$like = '%' . implode( '%', array_map( array( $GLOBALS['wpdb'], 'esc_like' ), explode( '*', $string ) ) ) . '%';
+			$like = '%' . implode( '%', array_map( array( $this->get_db(), 'esc_like' ), explode( '*', $string ) ) ) . '%';
 		} else {
-			$like = '%' . $GLOBALS['wpdb']->esc_like( $string ) . '%';
+			$like = '%' . $this->get_db()->esc_like( $string ) . '%';
 		}
 
 		$searches = array();
 		foreach ( $columns as $column ) {
-			$searches[] = $GLOBALS['wpdb']->prepare( "$column LIKE %s", $like );
+			$searches[] = $this->get_db()->prepare( "$column LIKE %s", $like );
 		}
 
 		return '(' . implode( ' OR ', $searches ) . ')';
@@ -703,5 +722,16 @@ class WP_Meta_Data_Query {
 		} else {
 			return 'DESC';
 		}
+	}
+
+	/**
+	 * Return the database interface.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return object
+	 */
+	private function get_db() {
+		return $GLOBALS['wpdb'];
 	}
 }
