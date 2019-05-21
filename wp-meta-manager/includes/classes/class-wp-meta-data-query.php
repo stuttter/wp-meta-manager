@@ -521,6 +521,10 @@ class WP_Meta_Data_Query {
 
 		$where = implode( ' AND ', $this->sql_clauses['where'] );
 
+		// Not used, but defined so filters can
+		$groupby = '';
+
+		// Define the query clause filters
 		$pieces = array( 'fields', 'where', 'orderby', 'limits', 'groupby' );
 
 		/**
