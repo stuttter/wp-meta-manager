@@ -408,7 +408,7 @@ class WP_Meta_Data_Query {
 		}
 
 		// Parse meta IDs for an IN clause.
-		if ( ! empty( $this->query_vars['in'] ) ) {
+		if ( ! empty( $this->query_vars['meta_id__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
 				$this->sql_clauses['where']['meta_id'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_id']} = %d", reset( $this->query_vars['in'] ) );
 			} else {
@@ -430,7 +430,7 @@ class WP_Meta_Data_Query {
 		}
 
 		// Parse object IDs for an IN clause.
-		if ( ! empty( $this->query_vars['in'] ) ) {
+		if ( ! empty( $this->query_vars['object_id__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
 				$this->sql_clauses['where']['object_id'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['object_id']} = %d", reset( $this->query_vars['in'] ) );
 			} else {
@@ -446,45 +446,45 @@ class WP_Meta_Data_Query {
 		/** key ***************************************************************/
 
 		// Parse object IDs for an IN clause.
-		$key = absint( $this->query_vars['key'] );
+		$key = $this->query_vars['key'];
 		if ( ! empty( $key ) ) {
-			$this->sql_clauses['where']['key'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_key']} = %d", $key );
+			$this->sql_clauses['where']['key'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_key']} = %s", $key );
 		}
 
 		// Parse object IDs for an IN clause.
-		if ( ! empty( $this->query_vars['in'] ) ) {
+		if ( ! empty( $this->query_vars['key__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
-				$this->sql_clauses['where']['key'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_key']} = %d", reset( $this->query_vars['in'] ) );
+				$this->sql_clauses['where']['key'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_key']} = %s", reset( $this->query_vars['in'] ) );
 			} else {
-				$this->sql_clauses['where']['key__in'] = "{$this->meta_object->columns['meta_key']} IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['key__in'] ) ) . ' )';
+				$this->sql_clauses['where']['key__in'] = "{$this->meta_object->columns['meta_key']} IN ( " . implode( ',', $this->query_vars['key__in'] ) . ' )';
 			}
 		}
 
 		// Parse object IDs for a NOT IN clause.
 		if ( ! empty( $this->query_vars['key__not_in'] ) ) {
-			$this->sql_clauses['where']['key__not_in'] = "{$this->meta_object->columns['meta_key']} NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['key__not_in'] ) ) . ' )';
+			$this->sql_clauses['where']['key__not_in'] = "{$this->meta_object->columns['meta_key']} NOT IN ( " . implode( ',', $this->query_vars['key__not_in'] ) . ' )';
 		}
 
 		/** value *************************************************************/
 
 		// Parse object IDs for an IN clause.
-		$value = absint( $this->query_vars['value'] );
+		$value = $this->query_vars['value'];
 		if ( ! empty( $value ) ) {
 			$this->sql_clauses['where']['value'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_value']} = %d", $value );
 		}
 
 		// Parse object IDs for an IN clause.
-		if ( ! empty( $this->query_vars['in'] ) ) {
+		if ( ! empty( $this->query_vars['value__in'] ) ) {
 			if ( 1 === count( $this->query_vars['in'] ) ) {
-				$this->sql_clauses['where']['value'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_value']} = %d", reset( $this->query_vars['in'] ) );
+				$this->sql_clauses['where']['value'] = $GLOBALS['wpdb']->prepare( "{$this->meta_object->columns['meta_value']} = %s", reset( $this->query_vars['in'] ) );
 			} else {
-				$this->sql_clauses['where']['value__in'] = "{$this->meta_object->columns['meta_value']} IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['value__in'] ) ) . ' )';
+				$this->sql_clauses['where']['value__in'] = "{$this->meta_object->columns['meta_value']} IN ( " . implode( ',', $this->query_vars['value__in'] ) . ' )';
 			}
 		}
 
 		// Parse object IDs for a NOT IN clause.
 		if ( ! empty( $this->query_vars['value__not_in'] ) ) {
-			$this->sql_clauses['where']['value__not_in'] = "{$this->meta_object->columns['meta_value']} NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['value__not_in'] ) ) . ' )';
+			$this->sql_clauses['where']['value__not_in'] = "{$this->meta_object->columns['meta_value']} NOT IN ( " . implode( ',', $this->query_vars['value__not_in'] ) . ' )';
 		}
 
 		/** Search ************************************************************/
