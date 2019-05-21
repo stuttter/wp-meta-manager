@@ -96,17 +96,6 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
-	 * Return the database interface.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return object
-	 */
-	private function get_db() {
-		return $GLOBALS['wpdb'];
-	}
-
-	/**
 	 * Get the link used to filter by a certain thing.
 	 *
 	 * @since 2.0.0
