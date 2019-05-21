@@ -96,6 +96,63 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
+	 * Return the database interface.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return object
+	 */
+	private function get_db() {
+		return $GLOBALS['wpdb'];
+	}
+
+	/**
+	 * Get the link used to filter by a certain thing.
+	 *
+	 * @since 2.0.0
+	 * @param string $text
+	 * @param array  $args
+	 *
+	 * @return string
+	 */
+	private function get_filter_link( $text = '', $args = array() ) {
+
+		// Tab
+		$tab = ! empty( $_REQUEST['tab'] )
+			? sanitize_key( $_REQUEST['tab'] )
+			: 'post';
+
+		// Default args
+		$defaults = array(
+			'tab' => $tab
+		);
+
+		// Key
+		if ( ! empty( $_REQUEST['meta_key'] ) ) {
+			$defaults['key'] = sanitize_text_field( $_REQUEST['meta_key'] );
+		}
+
+		// Object ID
+		if ( ! empty( $_REQUEST['object_id'] ) ) {
+			$defaults['object_id'] = absint( $_REQUEST['object_id'] );
+		}
+
+		// Search
+		if ( ! empty( $_REQUEST['s'] ) ) {
+			$defaults['s'] = sanitize_text_field( $_REQUEST['s'] );
+		}
+
+		// Parse args
+		$r = wp_parse_args( $args, $defaults );
+
+		// Get the URL
+		$url = add_query_arg( $r, menu_page_url( 'wp-meta-manager', false ) );
+
+		// Return HTML
+		return '<a href="' . esc_url( $url ) . '">' . esc_html( $text ) . '</a>';
+	}
+
+	/**
 	 * Output the check-box column for bulk actions (if we implement them)
 	 *
 	 * @since 1.0.0
@@ -148,13 +205,13 @@ class WP_Meta_List_table extends WP_List_Table {
 		);
 
 		// Filter by meta_key
-		$url = add_query_arg( array(
+		$link = $this->get_filter_link( $item->meta_key, array(
 			'tab'      => $item->object_type,
 			'meta_key' => $item->meta_key
-		), menu_page_url( 'wp-meta-manager', false ) );
+		) );
 
 		// Return link and rows
-		return '<a href="' . esc_url( $url ) . '">' . esc_html( $item->meta_key ) . '</a>' . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
+		return $link . '<div class="row-actions">' . $this->row_actions( $actions, true ) . '</div>';
 	}
 
 	/**
@@ -163,15 +220,10 @@ class WP_Meta_List_table extends WP_List_Table {
 	 * @since 1.0.0
 	 */
 	public function column_object_id( $item = '' ) {
-
-		// Filter by object ID
-		$url = add_query_arg( array(
-			'tab'      => $item->object_type,
+		return $this->get_filter_link( $item->object_id, array(
+			'tab'       => $item->object_type,
 			'object_id' => $item->object_id
-		), menu_page_url( 'wp-meta-manager', false ) );
-
-		// Return the link
-		return '<a href="' . esc_url( $url ) . '">' . esc_html( $item->object_id ) . '</a>';
+		) );
 	}
 
 	/**
@@ -225,18 +277,6 @@ class WP_Meta_List_table extends WP_List_Table {
 	}
 
 	/**
-	 * Get the total number of rows
-	 *
-	 * @todo  Cache this
-	 * @since 1.0.0
-	 */
-	public function get_total_items() {
-		global $wpdb;
-
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table_name} WHERE 1=1;" );
-	}
-
-	/**
 	 * Prepare the list-table items for display
 	 *
 	 * @since 1.0.0
@@ -284,7 +324,7 @@ class WP_Meta_List_table extends WP_List_Table {
 			'number'  => $per_page,
 			'offset'  => $offset,
 			'orderby' => $orderby,
-			'order'   => ucwords( $order ),
+			'order'   => strtoupper( $order ),
 			'search'  => $search
 		);
 
@@ -301,17 +341,14 @@ class WP_Meta_List_table extends WP_List_Table {
 		// Query for replies
 		$meta_data_query = new WP_Meta_Data_Query( $args, $this->object_type );
 
-		// Get the total number of replies, for pagination
-		$total_items = $this->get_total_items();
-
 		// Set list table items to queried meta rows
 		$this->items = $meta_data_query->metas;
 
 		// Set the pagination arguments
 		$this->set_pagination_args( array(
-			'total_items' => $total_items,
+			'total_items' => $meta_data_query->found_metas,
 			'per_page'    => $per_page,
-			'total_pages' => ceil( $total_items / $per_page )
+			'total_pages' => ceil( $meta_data_query->found_metas / $per_page )
 		) );
 	}
 
