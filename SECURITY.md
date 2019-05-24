@@ -28,7 +28,7 @@ Education should be risk-free and reward-full. By keeping all issues open, every
 * First responders will reply within 24 hours
 * Issues that include reproduction steps will be confirmed within 48 hours
 * Accepted security issues will have a pull request within 72 hours
-* Merging to master will happen after manual confirmation, and after all unit/integration tests are confirmed passing
+* Merging to master will happen after manual confirmation, and after any related unit/integration tests are confirmed passing
 * New releases of the software will happen on the soonest available Tuesday, never on Fridays or weekends
 
 ## What if
