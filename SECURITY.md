@@ -4,7 +4,7 @@ Security related concerns will be prioritized according to perceived severity, a
 
 This policy does not guarantee bug-free software.
 
-This policy is a good-faith promise to acknowledge and address all responsibly reported issues.
+This policy is a good-faith promise to acknowledge and address all responsibly reported issues in a timely manner.
 
 All of the maintainers of this project appreciate you, and your time and efforts to improve the quality of this software.
 
