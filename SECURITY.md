@@ -12,8 +12,8 @@ All of the maintainers of this project appreciate you, and your time and efforts
 
 | Range                    | Version | Supported          |
 | -------------------------| ------- | ------------------ |
-| Greater than or equal to | 1.1.0   | :white_check_mark: |
-| Less than or equal to    | 1.0.0   | :x:                |
+| Greater than or equal to | 1.1.x   | :white_check_mark: |
+| Less than or equal to    | 1.0.x   | :x:                |
 
 ## Reporting a Vulnerability
 
